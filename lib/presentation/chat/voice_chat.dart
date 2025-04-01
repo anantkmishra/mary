@@ -1,9 +1,12 @@
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mary/constants/constants.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:lottie/lottie.dart';
+// import 'package:mary/constants/constants.dart';
 import 'package:mary/constants/image_assets.dart';
 import 'package:mary/providers/mary_chat_provider.dart';
+import 'package:mary/routing/router.dart';
 import 'package:mary/routing/routes.dart';
 import 'package:mary/style/style.dart';
 import 'package:mary/utils/widgets.dart';
@@ -24,6 +27,7 @@ class _MaryVoiceChatState extends ConsumerState<MaryVoiceChat> {
     dev.log(maryAppRouter.state.fullPath ?? "", name: "PATH ");
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(maryChatProvider.notifier).initSpeechToText();
+      ref.read(maryChatProvider.notifier).initTts();
     });
   }
 
@@ -76,61 +80,83 @@ class _MaryVoiceChatState extends ConsumerState<MaryVoiceChat> {
                 width: 200,
               ),
             ),
+            // Positioned(
+            //   left: (width - 200) / 2,
+            //   top: height / 4,
+            //   child: Lottie.asset(
+            //     MaryAssets.maryJSON,
+            //     repeat: true,
+            //     height: 200.w,
+            //     width: 200.w,
+            //   ),
+
+            //   // svgAssetImageWidget(
+            //   //   MaryAssets.maryVoiceLogoSVG,
+            //   //   height: 200,
+            //   //   width: 200,
+            //   // ),
+            // ),
             SizedBox(
               height: height,
               child: Padding(
                 padding: const EdgeInsets.all(20),
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          roundIconButton(
-                            onTap: navigateBack,
-                            icon: MaryAssets.leftArrowSVG,
-                          ),
-                          Column(
-                            children: [
-                              Text(
-                                "Speaking to Mary",
-                                style: MaryStyle().white16w500,
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        roundIconButton(
+                          onTap: navigateBack,
+                          icon: MaryAssets.leftArrowSVG,
+                        ),
+                        Column(
+                          children: [
+                            Text(
+                              "Speaking to Mary",
+                              style: MaryStyle().white16w500,
+                            ),
+                            Text(
+                              "Go ahead, I’m Listening",
+                              style: MaryStyle().white14w400.copyWith(
+                                color: MaryStyle().cadetGray,
                               ),
-                              Text(
-                                "Go ahead, I’m Listening",
-                                style: MaryStyle().white14w400.copyWith(
-                                  color: MaryStyle().cadetGray,
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
+                        ),
 
-                          roundIconButton(
-                            onTap: () {
-                              ref
-                                  .read(maryChatProvider.notifier)
-                                  .destroySession();
-                            },
-                            icon: MaryAssets.menu4SVG,
+                        roundIconButton(
+                          onTap: () {
+                            ref
+                                .read(maryChatProvider.notifier)
+                                .destroySession();
+                          },
+                          icon: MaryAssets.menu4SVG,
+                        ),
+                      ],
+                    ),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // SizedBox(height: 100),
+                          Text(
+                            provider.query ?? "",
+                            style: MaryStyle().white20w500,
+                            textAlign: TextAlign.center,
                           ),
+                          SizedBox(height: 20.w),
+                          Text(
+                            provider.response ?? "",
+                            style: MaryStyle().white16w500.copyWith(
+                              color: MaryStyle().white,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox.shrink(),
                         ],
                       ),
-                      Text(
-                        provider.query ?? "",
-                        style: MaryStyle().white20w500,
-                        textAlign: TextAlign.center,
-                      ),
-                      Text(
-                        provider.response ?? "",
-                        style: MaryStyle().white16w500.copyWith(
-                          color: MaryStyle().vividCrulian,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox.shrink(),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -145,10 +171,7 @@ class _MaryVoiceChatState extends ConsumerState<MaryVoiceChat> {
           children: [
             roundIconButton(
               onTap: () {
-                dev.log(
-                  ">${AppConstants().meldRxAccessToken}<",
-                  name: "Access Token",
-                );
+                navigateTo(MaryAppRoutes.chat);
               },
               icon: MaryAssets.chatbubbleSVG,
             ),
@@ -159,9 +182,6 @@ class _MaryVoiceChatState extends ConsumerState<MaryVoiceChat> {
                   duration: Duration(seconds: 1),
                   animate: provider.isRecording,
                   child: InkWell(
-                    // onTap: () {
-                    //   ref.read(maryChatProvider.notifier).toggle();
-                    // },
                     onTapUp: (_) {
                       ref.read(maryChatProvider.notifier).stopRecording();
                     },

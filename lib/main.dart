@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mary/constants/constants.dart';
+import 'package:mary/routing/router.dart';
 import 'package:mary/routing/routes.dart';
+import 'package:mary/style/style.dart';
 
 void main() {
   runApp(ProviderScope(child: const MyApp()));
@@ -12,15 +15,31 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'MARY',
-      theme: ThemeData(
-        // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        fontFamily: "PlusJakartaSans",
-      ),
-      routerConfig: maryAppRouter,
-      // home: const MyHomePage(),
+    // ScreenUtil.init(context);
+    return ScreenUtilInit(
+      designSize: const Size(428, 926),
+      minTextAdapt: true,
+      builder: (context, child) {
+        return MaterialApp.router(
+          title: 'MARY',
+          theme: ThemeData(
+            // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+            fontFamily: "PlusJakartaSans",
+          ),
+          routerConfig: maryAppRouter,
+          // home: const MyHomePage(),
+        );
+      },
     );
+    // return MaterialApp.router(
+    //   title: 'MARY',
+    //   theme: ThemeData(
+    //     // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+    //     fontFamily: "PlusJakartaSans",
+    //   ),
+    //   routerConfig: maryAppRouter,
+    //   // home: const MyHomePage(),
+    // );
   }
 }
 
@@ -37,13 +56,13 @@ class _MaryState extends State<Mary> {
     // TODO: implement initState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      AppConstants().isSharedPreferencesInitialized
-          ? null
-          : AppConstants().initializeSharedPreferences();
-      Future.delayed(const Duration(milliseconds: 100), () {
+      AppConstants().initializeSharedPreferences();
+      Future.delayed(const Duration(milliseconds: 500), () {
         if (AppConstants().meldRxAccessToken != null &&
             !AppConstants().isMeldRxAccessTokenExpired) {
           navigateTo(MaryAppRoutes.home);
+        } else {
+          navigateTo(MaryAppRoutes.meldRxLogin);
         }
       });
     });
@@ -51,19 +70,23 @@ class _MaryState extends State<Mary> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text("MARY"),
-      ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            navigateTo(MaryAppRoutes.login);
-          },
-          child: Text('Start App'),
-        ),
-      ),
+    return Center(
+      child: CircularProgressIndicator(color: MaryStyle().vividCrulian),
     );
+
+    // Scaffold(
+    //   appBar: AppBar(
+    //     backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+    //     title: Text("MARY"),
+    //   ),
+    //   body: Center(
+    //     child: ElevatedButton(
+    //       onPressed: () {
+    //         navigateTo(MaryAppRoutes.login);
+    //       },
+    //       child: Text('Start App'),
+    //     ),
+    //   ),
+    // );
   }
 }

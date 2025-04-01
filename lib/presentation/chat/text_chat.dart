@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:lottie/lottie.dart';
 import 'package:mary/constants/image_assets.dart';
-import 'package:mary/models/conversation.dart';
 import 'package:mary/providers/mary_chat_provider.dart';
+import 'package:mary/routing/router.dart';
 import 'dart:developer' as dev;
 
 import 'package:mary/routing/routes.dart';
@@ -18,6 +20,7 @@ class MaryTextChat extends ConsumerStatefulWidget {
 
 class _MaryTextChatState extends ConsumerState<MaryTextChat> {
   final TextEditingController query = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -30,15 +33,32 @@ class _MaryTextChatState extends ConsumerState<MaryTextChat> {
   void dispose() {
     super.dispose();
     query.dispose();
+    // chatScrollController.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final provider = ref.watch(maryChatProvider);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
+
     return Scaffold(
       backgroundColor: MaryStyle().darkBg,
       body: Container(
-        padding: EdgeInsets.only(top: 60, left: 15, right: 15, bottom: 20),
+        padding: EdgeInsets.only(
+          top: 60.w,
+          left: 15.w,
+          right: 15.w,
+          bottom: 20.w,
+        ),
         decoration: BoxDecoration(
           gradient: RadialGradient(
             colors: [
@@ -76,9 +96,26 @@ class _MaryTextChatState extends ConsumerState<MaryTextChat> {
               child: ListView.builder(
                 shrinkWrap: true,
                 itemCount: provider.conversation.data.length,
-                padding: EdgeInsets.only(bottom: 100),
+                padding: EdgeInsets.only(bottom: 100.w),
+                controller: _scrollController,
                 itemBuilder: (context, index) {
+                  if (index == provider.conversation.data.length - 1 &&
+                      provider.waitingForResponse) {
+                    return Column(
+                      children: [
+                        chatBubble(provider.conversation.data[index]),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Lottie.asset(
+                            MaryAssets.typingJSON,
+                            height: 50,
+                          ),
+                        ),
+                      ],
+                    );
+                  }
                   return chatBubble(provider.conversation.data[index]);
+
                   // return Text("Chat $index", style: MaryStyle().white16w500);
                 },
               ),
@@ -97,6 +134,10 @@ class _MaryTextChatState extends ConsumerState<MaryTextChat> {
                 controller: query,
                 style: MaryStyle().white16w500,
                 cursorColor: MaryStyle().cadetGray,
+                maxLines: null,
+                onTapOutside: (pde) {
+                  FocusManager.instance.primaryFocus?.unfocus();
+                },
                 decoration: InputDecoration(
                   fillColor: MaryStyle().gunmetal,
                   filled: true,
@@ -120,46 +161,51 @@ class _MaryTextChatState extends ConsumerState<MaryTextChat> {
                       child: svgAssetImageWidget(
                         MaryAssets.add2SVG,
                         color: MaryStyle().cadetGray,
-                        height: 25,
-                        width: 25,
+                        height: 25.w,
+                        width: 25.w,
                       ),
                     ),
                   ),
+
                   suffixIcon: Padding(
-                    padding: const EdgeInsets.all(10.0),
+                    padding: EdgeInsets.all(10.0.w),
                     child:
-                        provider.waitingForResponse
-                            ? CircularProgressIndicator(
-                              color: MaryStyle().cadetGray,
-                            )
-                            : InkWell(
-                              onTap: () {
-                                ref
-                                    .read(maryChatProvider.notifier)
-                                    .sendQuery(query.text);
-                                query.text = "";
-                              },
-                              child: svgAssetImageWidget(
-                                MaryAssets.sendSVG,
-                                color: MaryStyle().cadetGray,
-                                height: 25,
-                                width: 25,
-                              ),
-                            ),
+                    // provider.waitingForResponse
+                    //     ? CircularProgressIndicator(
+                    //       color: MaryStyle().cadetGray,
+                    //     )
+                    // :
+                    InkWell(
+                      onTap: () {
+                        if (query.text.isNotEmpty) {
+                          final pv = ref.read(maryChatProvider.notifier);
+                          pv.addQuery(query.text);
+                          pv.sendQuery(query.text);
+                          query.text = "";
+                          FocusManager.instance.primaryFocus?.unfocus();
+                        }
+                      },
+                      child: svgAssetImageWidget(
+                        MaryAssets.sendSVG,
+                        color: MaryStyle().cadetGray,
+                        height: 25.w,
+                        width: 25.w,
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
-            SizedBox(width: 10),
+            SizedBox(width: 10.w),
             ClipOval(
               child: InkWell(
                 onTap: () {
-                  ref.read(maryChatProvider.notifier).f();
+                  navigateTo(MaryAppRoutes.voiceChat);
                 },
                 customBorder: CircleBorder(),
                 child: Container(
-                  height: 64,
-                  width: 64,
+                  height: 64.w,
+                  width: 64.w,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: LinearGradient(
@@ -174,8 +220,8 @@ class _MaryTextChatState extends ConsumerState<MaryTextChat> {
                   alignment: Alignment.center,
                   child: svgAssetImageWidget(
                     MaryAssets.microphoneSVG,
-                    height: 24,
-                    width: 24,
+                    height: 24.w,
+                    width: 24.w,
                     color: MaryStyle().white,
                   ),
                 ),
@@ -183,43 +229,6 @@ class _MaryTextChatState extends ConsumerState<MaryTextChat> {
             ),
             // roundIconButton(onTap: () {}, icon: ),
           ],
-        ),
-      ),
-    );
-  }
-
-  chatBubble(ConversationPiece statement) {
-    final br = Radius.circular(20);
-    return Align(
-      alignment:
-          statement.role == ConversationRole.user
-              ? Alignment.centerRight
-              : Alignment.centerLeft,
-      child: Container(
-        margin: EdgeInsets.only(bottom: 10),
-        constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.8,
-        ),
-        // width: MediaQuery.of(context).size.width * 0.8,
-        padding: EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          border: Border.all(color: MaryStyle().cadetGray),
-          borderRadius: BorderRadius.only(
-            topLeft: br,
-            topRight: br,
-            bottomLeft:
-                statement.role == ConversationRole.assistant ? Radius.zero : br,
-            bottomRight:
-                statement.role == ConversationRole.user ? Radius.zero : br,
-          ),
-        ),
-        child: Text(
-          statement.content,
-          style: MaryStyle().white14w400,
-          textAlign:
-              statement.role == ConversationRole.user
-                  ? TextAlign.end
-                  : TextAlign.start,
         ),
       ),
     );

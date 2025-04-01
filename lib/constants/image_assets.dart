@@ -115,4 +115,8 @@ class MaryAssets {
   static const String stethoscopeSVG = "assets/svg/stethoscope.svg";
 
   static const String voiceChatCardPNG = "assets/png/voice_chat_card_bg.png";
+
+  static const String maryJSON = "assets/lottie/waves2.json";
+
+  static const String typingJSON = "assets/lottie/typing.json";
 }

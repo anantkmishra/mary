@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:mary/constants/constants.dart';
 import 'package:mary/models/conversation.dart';
 import 'package:mary/models/patient.dart';
+import 'package:mary/routing/router.dart';
 import 'package:mary/routing/routes.dart';
 import 'package:mary/services/api_service_provider.dart';
 import 'package:mary/style/style.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'dart:developer' as dev;
+import 'package:flutter_tts/flutter_tts.dart';
 
 @immutable
 class MaryChatData {
@@ -78,8 +81,23 @@ class MaryChatData {
   }
 }
 
+enum TtsState { playing, stopped, paused, continued }
+
 class MaryChatNotifier extends StateNotifier<MaryChatData> {
-  MaryChatNotifier() : super(MaryChatData.fromJSON({}));
+  MaryChatNotifier(this.ref) : super(MaryChatData.fromJSON({}));
+
+  final Ref ref;
+  late FlutterTts flutterTts;
+  TtsState ttsState = TtsState.stopped;
+
+  initTts() {
+    flutterTts = FlutterTts();
+    flutterTts.setLanguage("en-US");
+  }
+
+  marySpeak(String textToSpeak) {
+    flutterTts.speak(textToSpeak);
+  }
 
   startRecording() {
     state = state.copyWith(isRecording: true);
@@ -97,11 +115,11 @@ class MaryChatNotifier extends StateNotifier<MaryChatData> {
     state = state.copyWith(isRecording: false);
     _speechToText.stop();
     if (state.query?.isNotEmpty ?? false) {
-      sendQuery(state.query ?? "");
+      sendQuery(state.query ?? "", speak: true);
     }
   }
 
-  sendQuery(String query) async {
+  sendQuery(String query, {bool speak = false}) async {
     //api call for query
     Map<String, String> queryParamsBody = <String, String>{
       "access_token": AppConstants().meldRxAccessToken ?? "",
@@ -125,10 +143,38 @@ class MaryChatNotifier extends StateNotifier<MaryChatData> {
     );
 
     handleResponse(response);
+
+    if (speak) {
+      marySpeak(state.response ?? "");
+    }
+  }
+
+  addQuery(String q) {
+    ConversationPiece cp = ConversationPiece(
+      role: ConversationRole.user,
+      content: q,
+    );
+
+    state = state.copyWith(
+      conversation: Conversation([...state.conversation.data, cp]),
+    );
   }
 
   handleResponse(Map<String, dynamic> res) async {
     dev.log('handleResponse()', name: "function()");
+
+    if (res.containsKey("response") &&
+        res["response"] == "Token has expired, please regenerate.") {
+      ScaffoldMessenger.of(navKey.currentContext!).showSnackBar(
+        SnackBar(
+          content: Text("Token Expired", style: MaryStyle().white14w400),
+          backgroundColor: Colors.red,
+        ),
+      );
+      navigateTo(MaryAppRoutes.meldRxLogin);
+      return;
+    }
+
     MaryChatData newData = MaryChatData.fromJSON(res);
 
     state = state.copyWith(
@@ -173,53 +219,152 @@ class MaryChatNotifier extends StateNotifier<MaryChatData> {
   Future<String?> showPatientSelectionDialog() async {
     return await showModalBottomSheet(
       isDismissible: false,
+      // isScrollControlled: true,
       context: navKey.currentContext!,
       builder: (BuildContext context) {
         String patientID = '';
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return Column(
-              children: [
-                SizedBox(height: 30),
-                Text(state.response ?? ""),
-                SizedBox(
-                  height: 200,
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: List.generate(state.patients.length, (index) {
-                        return ListTile(
-                          title: Text(state.patients[index].name),
-                          subtitle: Text(
-                            DateFormat(
-                              'dd MMM, yyyy',
-                            ).format(state.patients[index].dob),
-                          ),
-                          leading: Radio<String>(
-                            value:
-                                state
-                                    .patients[index]
-                                    .id, // Pass the index as the value
-                            groupValue: patientID,
-                            onChanged: (String? value) {
-                              setState(() {
-                                patientID = value ?? "";
-                              });
-                            },
-                          ),
-                        );
-                      }),
+        return SizedBox(
+          height: 400.w,
+          child: StatefulBuilder(
+            builder: (context, setState) {
+              return Padding(
+                padding: EdgeInsets.all(20.w),
+                child: Column(
+                  children: [
+                    // SizedBox(height: 30),
+                    Text(
+                      state.response ?? "",
+                      style: MaryStyle().white16w500.copyWith(
+                        color: MaryStyle().black,
+                      ),
                     ),
-                  ),
+                    SizedBox(height: 10.w),
+                    // Text(state.patients.length.toString()),
+
+                    /*
+                    SizedBox(
+                      height: 100.w,
+                      child: ListView.separated(
+                        shrinkWrap: true,
+                        separatorBuilder: (_, __) {
+                          return Divider();
+                        },
+                        itemCount: state.patients.length,
+                        itemBuilder: (context, index) {
+                          ListTile(
+                            title: Text(state.patients[index].name),
+                            subtitle: Text(
+                              'DOB: ${DateFormat('dd MMM, yyyy').format(state.patients[index].dob)}',
+                              style: MaryStyle().white12w400.copyWith(
+                                color: MaryStyle().black,
+                              ),
+                            ),
+                            leading: Radio<String>(
+                              value:
+                                  state
+                                      .patients[index]
+                                      .id, // Pass the index as the value
+                              groupValue: patientID,
+                              onChanged: (String? value) {
+                                setState(() {
+                                  patientID = value ?? "";
+                                });
+                              },
+                            ),
+                          );
+                        },
+                      ),
+                    ),*/
+                    SizedBox(
+                      height: 200,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: List.generate(state.patients.length, (
+                            index,
+                          ) {
+                            return Container(
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(color: MaryStyle().black),
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Radio<String>(
+                                    value:
+                                        state
+                                            .patients[index]
+                                            .id, // Pass the index as the value
+                                    groupValue: patientID,
+                                    onChanged: (String? value) {
+                                      setState(() {
+                                        patientID = value ?? "";
+                                      });
+                                    },
+                                  ),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(state.patients[index].name),
+                                      Text(
+                                        'DOB: ${DateFormat('dd MMM, yyyy').format(state.patients[index].dob)}',
+                                        style: MaryStyle().white12w400.copyWith(
+                                          color: MaryStyle().black,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            );
+                            // return ListTile(
+                            //   title: Text(
+                            //     state.patients[index].name,
+                            //     style: MaryStyle().white12w400.copyWith(
+                            //       color: MaryStyle().black,
+                            //     ),
+                            //   ),
+                            //   subtitle: Text(
+                            //     'DOB: ${DateFormat('dd MMM, yyyy').format(state.patients[index].dob)}',
+                            //   ),
+                            //   leading: Radio<String>(
+                            //     value:
+                            //         state
+                            //             .patients[index]
+                            //             .id, // Pass the index as the value
+                            //     groupValue: patientID,
+                            //     onChanged: (String? value) {
+                            //       setState(() {
+                            //         patientID = value ?? "";
+                            //       });
+                            //     },
+                            //   ),
+                            // );
+                          }),
+                        ),
+                      ),
+                    ),
+                    Divider(),
+
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context, patientID);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: MaryStyle().palatinateBlue,
+                        minimumSize: Size.fromHeight(50.w),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.w),
+                        ),
+                      ),
+                      child: Text('Submit', style: MaryStyle().white16w500),
+                    ),
+                  ],
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context, patientID);
-                  },
-                  child: Text('Submit'),
-                ),
-              ],
-            );
-          },
+              );
+            },
+          ),
         );
       },
     );
@@ -260,5 +405,5 @@ class MaryChatNotifier extends StateNotifier<MaryChatData> {
 
 final StateNotifierProvider<MaryChatNotifier, MaryChatData> maryChatProvider =
     StateNotifierProvider<MaryChatNotifier, MaryChatData>(
-      (ref) => MaryChatNotifier(),
+      (ref) => MaryChatNotifier(ref),
     );

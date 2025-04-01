@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class MaryStyle {
   static final MaryStyle _instance = MaryStyle._();
@@ -25,29 +26,32 @@ class MaryStyle {
   //textStyles
   TextStyle get grey16w500 => TextStyle(
     color: Color(0xFF999999),
-    fontSize: 16,
+    fontSize: 16.sp,
     fontWeight: FontWeight.w500,
   );
 
   TextStyle get white20w500 => TextStyle(
     color: Color(0xFFFFFFFF),
-    fontSize: 20,
+    fontSize: 20.sp,
     fontWeight: FontWeight.w500,
   );
 
   TextStyle get white14w400 =>
-      TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: white);
+      TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w400, color: white);
 
   TextStyle get white12w400 =>
-      TextStyle(color: white, fontSize: 12, fontWeight: FontWeight.w400);
+      TextStyle(color: white, fontSize: 12.sp, fontWeight: FontWeight.w400);
 
-  TextStyle get white16w500 => TextStyle(color: white, fontSize: 16);
+  TextStyle get white16w500 => TextStyle(color: white, fontSize: 16.sp);
+
+  TextStyle get white18w700 =>
+      TextStyle(color: white, fontSize: 18.sp, fontWeight: FontWeight.w700);
 
   //buttonStyle
 
   //iconButtoStyle
   ButtonStyle get jetBlackRoundIconButtonStyle => IconButton.styleFrom(
-    shape: CircleBorder(side: BorderSide(color: jetBlack, width: 1)),
+    shape: CircleBorder(side: BorderSide(color: jetBlack, width: 1.w)),
     backgroundColor: lightSilver.withAlpha(0x1A),
   );
 }

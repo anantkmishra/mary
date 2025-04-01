@@ -20,6 +20,8 @@ class AppConstants {
   final String redirectUri = "https://mary.seecole.app/callback";
 
   final String query = "query?";
+  final String conversationList = "query/conversation-list";
+  final String conversation = "query/conversation";
 
   String? _meldRxCodeVerifier;
   String? get meldRxCodeVerifier => _meldRxCodeVerifier;
@@ -38,42 +40,48 @@ class AppConstants {
   final String keyMeldRxAccessToken = "meldRxAccessToken";
   String? _meldRxAccessToken;
   String? get meldRxAccessToken => _meldRxAccessToken;
-  void setMeldRxAccessToken(String? token) {
+  void setMeldRxAccessToken(String? token, [bool? setSharedPreferencesAlso]) {
     _meldRxAccessToken = token;
-    // if (isSharedPreferencesInitialized) {
-    //   _sharedPreferences?.setString(keyMeldRxAccessToken, token ?? "");
-    // }
+    if (setSharedPreferencesAlso != null && setSharedPreferencesAlso) {
+      _sharedPreferences?.setString(keyMeldRxAccessToken, token ?? "");
+    }
   }
 
   final String keyMeldRxIdToken = "meldRxIdToken";
   String? _meldRxIdToken;
   String? get meldRxIdToken => _meldRxIdToken;
-  void setmeldRxIdToken(String? s) {
+  void setmeldRxIdToken(String? s, [bool? setSharedPreferencesAlso]) {
     _meldRxIdToken = s;
+    if (setSharedPreferencesAlso != null && setSharedPreferencesAlso) {
+      _sharedPreferences?.setString(keyMeldRxIdToken, s ?? "");
+    }
     // if (isSharedPreferencesInitialized) {
-    //   _sharedPreferences?.setString(keyMeldRxIdToken, s ?? "");
+    //
     // }
   }
 
   final String keyMeldRxRefreshToken = "meldRxrefreshToken";
   String? _meldRxRefreshToken;
   String? get meldRxRefreshToken => _meldRxRefreshToken;
-  void setmeldRxRefreshToken(String? s) {
+  void setmeldRxRefreshToken(String? s, [bool? setSharedPreferencesAlso]) {
     _meldRxRefreshToken = s;
-    // if (isSharedPreferencesInitialized) {
-    //   _sharedPreferences?.setString(keyMeldRxRefreshToken, s ?? "");
-    // }
+    if (setSharedPreferencesAlso != null && setSharedPreferencesAlso) {
+      _sharedPreferences?.setString(keyMeldRxRefreshToken, s ?? "");
+    }
   }
 
   final String keyMeldRxAccessTokenExpiry = "meldRxAccessTokenExpiry";
   DateTime? _meldRxAccessTokenExpiry;
   DateTime? get meldRxAccessTokenExpiry => _meldRxAccessTokenExpiry;
-  void setMeldRxAccessTokenExpiry(DateTime? expiry) {
+  void setMeldRxAccessTokenExpiry(
+    DateTime? expiry, [
+    bool? setSharedPreferencesAlso,
+  ]) {
     _meldRxAccessTokenExpiry = expiry;
 
     // DateTime.now().add(Duration(seconds: seconds));
 
-    if (isSharedPreferencesInitialized) {
+    if (setSharedPreferencesAlso != null && setSharedPreferencesAlso) {
       _sharedPreferences?.setString(
         keyMeldRxAccessTokenExpiry,
         meldRxAccessTokenExpiry.toString(),
@@ -99,13 +107,35 @@ class AppConstants {
 
   initializeSharedPreferences() async {
     _sharedPreferences = await SharedPreferences.getInstance();
-    // setMeldRxAccessToken(_sharedPreferences?.getString(keyMeldRxAccessToken));
-    // setmeldRxIdToken(_sharedPreferences?.getString(keyMeldRxIdToken));
-    // setmeldRxRefreshToken(_sharedPreferences?.getString(keyMeldRxRefreshToken));
-    // setMeldRxAccessTokenExpiry(
-    //   DateTime.tryParse(
-    //     _sharedPreferences!.getString(keyMeldRxAccessTokenExpiry) ?? "",
-    //   ),
-    // );
+
+    if (_sharedPreferences?.containsKey(keyMeldRxAccessToken) ?? false) {
+      setMeldRxAccessToken(_sharedPreferences?.getString(keyMeldRxAccessToken));
+    }
+
+    if (_sharedPreferences?.containsKey(keyMeldRxIdToken) ?? false) {
+      setmeldRxIdToken(_sharedPreferences?.getString(keyMeldRxIdToken));
+    }
+
+    if (_sharedPreferences?.containsKey(keyMeldRxRefreshToken) ?? false) {
+      setmeldRxRefreshToken(
+        _sharedPreferences?.getString(keyMeldRxRefreshToken),
+      );
+    }
+
+    if (_sharedPreferences?.containsKey(keyMeldRxAccessTokenExpiry) ?? false) {
+      setMeldRxAccessTokenExpiry(
+        DateTime.tryParse(
+          _sharedPreferences!.getString(keyMeldRxAccessTokenExpiry) ?? "",
+        ),
+      );
+    }
+  }
+
+  show() {
+    print("abcd");
+    print(_sharedPreferences?.getString(keyMeldRxAccessToken));
+    print(_sharedPreferences?.getString(keyMeldRxRefreshToken));
+    print(_sharedPreferences?.getString(keyMeldRxIdToken));
+    print(_sharedPreferences?.getString(keyMeldRxAccessTokenExpiry));
   }
 }

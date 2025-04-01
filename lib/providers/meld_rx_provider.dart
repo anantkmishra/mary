@@ -4,39 +4,39 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mary/constants/constants.dart';
+import 'package:mary/routing/router.dart';
 import 'package:mary/routing/routes.dart';
 import 'package:mary/services/api_service_provider.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+// import 'package:webview_flutter/webview_flutter.dart';
 import 'dart:developer' as dev;
 import "dart:math";
 
 import "package:crypto/crypto.dart";
-import 'package:webview_flutter_android/webview_flutter_android.dart';
+// import 'package:webview_flutter_android/webview_flutter_android.dart';
 // Import for iOS/macOS features.
-import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
+// import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
 @immutable
 class MeldRxData {
-  final bool isControllerInitialized;
-  final WebViewController? controller;
+  final bool isAuthURLInitialized;
+  // final WebViewController? controller;
   final String? error;
 
   const MeldRxData({
-    required this.isControllerInitialized,
-    required this.controller,
+    required this.isAuthURLInitialized,
+    // required this.controller,
     required this.error,
   });
 
   MeldRxData copyWith({
-    bool? isControllerInitialized,
-    WebViewController? controller,
+    bool? isAuthURLInitialized,
+    // WebViewController? controller,
     String? error,
     String? codeVerifier,
   }) {
     return MeldRxData(
-      isControllerInitialized:
-          isControllerInitialized ?? this.isControllerInitialized,
-      controller: controller ?? this.controller,
+      isAuthURLInitialized: isAuthURLInitialized ?? this.isAuthURLInitialized,
+      // controller: controller ?? this.controller,
       error: error ?? this.error,
     );
   }
@@ -46,8 +46,8 @@ class MeldRxNotifier extends StateNotifier<MeldRxData> {
   MeldRxNotifier()
     : super(
         MeldRxData(
-          isControllerInitialized: false,
-          controller: null,
+          isAuthURLInitialized: false,
+          // controller: null,
           error: null,
         ),
       );
@@ -57,93 +57,93 @@ class MeldRxNotifier extends StateNotifier<MeldRxData> {
       initAuthURL();
       dev.log(AppConstants().authURL ?? "null", name: "AUTHURL");
 
-      // >> this function after initializing webviewcontroller, redirects to the authURL which after signing in and giving permissions, calls extractCode() and then fetchToken()
-      initController();
+      // initController();
     } catch (e) {
       state = state.copyWith(error: e.toString());
       dev.log(e.toString(), name: "meldRxProvider Init Error");
     }
   }
 
-  Future<void> initController() async {
-    try {
-      late final PlatformWebViewControllerCreationParams params;
-      if (WebViewPlatform.instance is WebKitWebViewPlatform) {
-        params = WebKitWebViewControllerCreationParams(
-          allowsInlineMediaPlayback: true,
-          mediaTypesRequiringUserAction: const <PlaybackMediaTypes>{},
-        );
-      } else {
-        params = const PlatformWebViewControllerCreationParams();
-      }
+  // Future<void> initController() async {
+  //   try {
+  // late final PlatformWebViewControllerCreationParams params;
+  // if (WebViewPlatform.instance is WebKitWebViewPlatform) {
+  //   params = WebKitWebViewControllerCreationParams(
+  //     allowsInlineMediaPlayback: true,
+  //     mediaTypesRequiringUserAction: const <PlaybackMediaTypes>{
+  //       PlaybackMediaTypes.video,
+  //       PlaybackMediaTypes.audio,
+  //     },
+  //   );
+  // } else {
+  //   params = const PlatformWebViewControllerCreationParams();
+  // }
 
-      final WebViewController controller =
-          WebViewController.fromPlatformCreationParams(params)
-            ..setJavaScriptMode(JavaScriptMode.unrestricted)
-            ..loadRequest(Uri.parse(AppConstants().authURL ?? ""))
-            ..setNavigationDelegate(
-              NavigationDelegate(
-                onProgress: (int progress) {
-                  dev.log("$progress%", name: "onProgress()");
-                },
-                onPageStarted: (String url) {
-                  dev.log(url, name: "onPageStarted()");
-                },
-                onPageFinished: (String url) {
-                  dev.log(url, name: "onPageFinished()");
-                },
-                onWebResourceError: (WebResourceError error) {
-                  dev.log(
-                    "Page resource error: \ncode: ${error.errorCode}\n description: ${error.description} \nerrorType: ${error.errorType} \nisForMainFrame: ${error.isForMainFrame} ",
-                    name: "onWebResourceError",
-                  );
-                },
-                onNavigationRequest: (NavigationRequest request) {
-                  dev.log(request.url, name: "onNavigationRequest");
-                  // if (request.url.contains('unsafe-resource-url')) {
-                  //   return NavigationDecision
-                  //       .prevent; // Block or modify certain URLs if needed
-                  // }
+  // final WebViewController controller = WebViewController.fromPlatformCreationParams(params);
+  // WebViewController.fromPlatformCreationParams(params);
 
-                  if (request.url.startsWith(
-                    "https://mary.seecole.app/callback?code=",
-                  )) {
-                    fetchToken(request.url);
-                    // return NavigationDecision.prevent;
-                  }
-                  return NavigationDecision.navigate;
-                },
-                onHttpError: (HttpResponseError error) {
-                  dev.log(
-                    "${error.request?.uri.authority} ${error.request?.uri.host} ${error.request?.uri.path} ${error.response?.statusCode}",
-                    name: "onHttpError",
-                  );
-                },
-                onUrlChange: (UrlChange change) {
-                  dev.log(change.url ?? "", name: "onUrlChange()");
-                },
-                onHttpAuthRequest: (HttpAuthRequest request) {
-                  dev.log(request.toString(), name: "onHttpAuthRequest()");
-                },
-              ),
-            )
-            ..addJavaScriptChannel(
-              'Toaster',
-              onMessageReceived: (JavaScriptMessage message) {
-                dev.log(message.message, name: "onMessageReceived");
-              },
-            );
-      controller.clearCache();
-      state = state.copyWith(
-        controller: controller,
-        isControllerInitialized: true,
-        error: null,
-      );
-    } catch (e) {
-      dev.log(e.toString(), name: "WebViewController initialization Error");
-      state = state.copyWith(error: e.toString());
-    }
-  }
+  // controller
+  //   ..setJavaScriptMode(JavaScriptMode.unrestricted)
+  //   ..loadRequest(Uri.parse(AppConstants().authURL ?? ""))
+  //   ..setNavigationDelegate(
+  //     NavigationDelegate(
+  // onProgress: (int progress) {
+  //   dev.log("$progress%", name: "onProgress()");
+  // },
+  // onPageStarted: (String url) {
+  //   dev.log(url, name: "onPageStarted()");
+  // },
+  // onPageFinished: (String url) {
+  //   dev.log(url, name: "onPageFinished()");
+  // },
+  // onWebResourceError: (WebResourceError error) {
+  //   dev.log(
+  //     "Page resource error: \ncode: ${error.errorCode}\n description: ${error.description} \nerrorType: ${error.errorType} \nisForMainFrame: ${error.isForMainFrame} ",
+  //     name: "onWebResourceError",
+  //   );
+  // },
+  // onNavigationRequest: (NavigationRequest request) {
+  //   dev.log(request.url, name: "onNavigationRequest");
+
+  //   if (request.url.startsWith(
+  //     "https://mary.seecole.app/callback?code=",
+  //   )) {
+  //     fetchToken(request.url);
+  //   }
+  //   return NavigationDecision.navigate;
+  // },
+  // onHttpError: (HttpResponseError error) {
+  // dev.log(
+  //   "${error.request?.uri.authority} ${error.request?.uri.host} ${error.request?.uri.path} ${error.response?.statusCode}",
+  //   name: "onHttpError",
+  // );
+  // },
+  // onUrlChange: (UrlChange change) {
+  //   dev.log(change.url ?? "", name: "onUrlChange()");
+  // },
+  // onHttpAuthRequest: (HttpAuthRequest request) {
+  //   dev.log(request.toString(), name: "onHttpAuthRequest()");
+  // },
+  //   ),
+  // )
+  // ..addJavaScriptChannel(
+  //   'Toaster',
+  //   onMessageReceived: (JavaScriptMessage message) {
+  //     dev.log(message.message, name: "onMessageReceived");
+  //   },
+  // )
+  // ;
+  // controller.clearCache();
+  // state = state.copyWith(
+  //   // controller: controller,
+  //   isControllerInitialized: true,
+  //   error: null,
+  // );
+  //   } catch (e) {
+  //     dev.log(e.toString(), name: "WebViewController initialization Error");
+  //     state = state.copyWith(error: e.toString());
+  //   }
+  // }
 
   Future<void> fetchToken(String url) async {
     try {
@@ -187,23 +187,24 @@ class MeldRxNotifier extends StateNotifier<MeldRxData> {
   bool _initTokens(Map<String, dynamic> data) {
     bool allInitialized = true;
     if (data.containsKey("id_token")) {
-      AppConstants().setmeldRxIdToken(data["id_token"]);
+      AppConstants().setmeldRxIdToken(data["id_token"], true);
     } else {
       allInitialized = false;
     }
     if (data.containsKey("access_token")) {
-      AppConstants().setMeldRxAccessToken(data["access_token"]);
+      AppConstants().setMeldRxAccessToken(data["access_token"], true);
     } else {
       allInitialized = false;
     }
     if (data.containsKey("refresh_token")) {
-      AppConstants().setmeldRxRefreshToken(data["refresh_token"]);
+      AppConstants().setmeldRxRefreshToken(data["refresh_token"], true);
     } else {
       allInitialized = false;
     }
     if (data.containsKey("expires_in")) {
       AppConstants().setMeldRxAccessTokenExpiry(
         DateTime.now().add(Duration(seconds: data["expires_in"])),
+        true,
       );
     } else {
       allInitialized = false;
@@ -280,6 +281,8 @@ class MeldRxNotifier extends StateNotifier<MeldRxData> {
           ).query;
       AppConstants().authURL =
           "https://app.meldrx.com/connect/authorize?$queryParams";
+
+      state = state.copyWith(isAuthURLInitialized: true);
 
       return;
     } catch (e) {
