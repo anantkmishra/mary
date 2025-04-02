@@ -24,3 +24,7 @@ String xTimeAgo(DateTime dt) {
 
   return DateFormat('dd MMM, yyyy').format(dt);
 }
+
+ddMMMyyyy(DateTime d) {
+  return DateFormat('dd MMM, yyyy').format(d);
+}

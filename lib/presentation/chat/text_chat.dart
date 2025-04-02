@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mary/constants/image_assets.dart';
+import 'package:mary/models/chat_data.dart';
+import 'package:mary/providers/chat_provider.dart';
 import 'package:mary/providers/mary_chat_provider.dart';
 import 'package:mary/routing/router.dart';
 import 'dart:developer' as dev;
@@ -12,7 +14,8 @@ import 'package:mary/style/style.dart';
 import 'package:mary/utils/widgets.dart';
 
 class MaryTextChat extends ConsumerStatefulWidget {
-  const MaryTextChat({super.key});
+  const MaryTextChat({super.key, this.chatData});
+  final ChatData? chatData;
 
   @override
   ConsumerState<MaryTextChat> createState() => _MaryTextChatState();
@@ -27,18 +30,33 @@ class _MaryTextChatState extends ConsumerState<MaryTextChat> {
     // TODO: implement initState
     super.initState();
     dev.log(maryAppRouter.state.fullPath ?? "", name: "PATH ");
+    if (widget.chatData != null) {
+      WidgetsBinding.instance.addPostFrameCallback((t) {
+        final provider = ref.read(chatProvider);
+        // provider.destroySession();
+        provider.initSession(
+          patientId: widget.chatData!.patientId,
+          sessionId: widget.chatData!.conversationId,
+          callNotifyListeners: false,
+        );
+        provider.fetchConversationBySessionId(
+          widget.chatData?.conversationId ?? "",
+        );
+      });
+    }
   }
 
   @override
   void dispose() {
     super.dispose();
     query.dispose();
-    // chatScrollController.dispose();
+    _scrollController.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final provider = ref.watch(maryChatProvider);
+    // final provider = ref.watch(maryChatProvider);
+    final provider = ref.watch(chatProvider);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
@@ -82,44 +100,71 @@ class _MaryTextChatState extends ConsumerState<MaryTextChat> {
                   },
                   icon: MaryAssets.leftArrowSVG,
                 ),
-                Text("New Chat", style: MaryStyle().white16w500),
+                SizedBox(width: 10.w),
+                Flexible(
+                  child: Text(
+                    widget.chatData?.title ?? "New Chat",
+                    style: MaryStyle().white16w500,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                SizedBox(width: 10.w),
                 roundIconButton(
                   onTap: () {
                     // _showPopupMenu(context);
-                    ref.read(maryChatProvider.notifier).destroySession();
+                    // ref.read(maryChatProvider.notifier).destroySession();
+                    // provider.destroySession();
+                    provider.f();
                   },
                   icon: MaryAssets.menu4SVG,
                 ),
               ],
             ),
-            Expanded(
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: provider.conversation.data.length,
-                padding: EdgeInsets.only(bottom: 100.w),
-                controller: _scrollController,
-                itemBuilder: (context, index) {
-                  if (index == provider.conversation.data.length - 1 &&
-                      provider.waitingForResponse) {
-                    return Column(
-                      children: [
-                        chatBubble(provider.conversation.data[index]),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Lottie.asset(
-                            MaryAssets.typingJSON,
-                            height: 50,
-                          ),
-                        ),
-                      ],
-                    );
-                  }
-                  return chatBubble(provider.conversation.data[index]);
-
-                  // return Text("Chat $index", style: MaryStyle().white16w500);
-                },
+            if (provider.error != null)
+              Expanded(
+                child: Center(
+                  child: Text(
+                    provider.error!,
+                    style: MaryStyle().white16w500,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
               ),
-            ),
+            if (provider.isLoading)
+              Expanded(
+                child: Center(
+                  child: CircularProgressIndicator(color: MaryStyle().white),
+                ),
+              ),
+            if (provider.conversation.data.isNotEmpty)
+              Expanded(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: provider.conversation.data.length,
+                  padding: EdgeInsets.only(bottom: 100.w),
+                  controller: _scrollController,
+                  itemBuilder: (context, index) {
+                    if (index == provider.conversation.data.length - 1 &&
+                        provider.waitingForResponse) {
+                      return Column(
+                        children: [
+                          chatBubble(provider.conversation.data[index]),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Lottie.asset(
+                              MaryAssets.typingJSON,
+                              height: 50,
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+                    return chatBubble(provider.conversation.data[index]);
+
+                    // return Text("Chat $index", style: MaryStyle().white16w500);
+                  },
+                ),
+              ),
             // SizedBox(height: 30),
           ],
         ),
@@ -151,7 +196,6 @@ class _MaryTextChatState extends ConsumerState<MaryTextChat> {
                   ),
                   hintText: "Send a Messsage",
                   hintStyle: MaryStyle().white16w500,
-
                   prefixIcon: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: InkWell(
@@ -178,9 +222,9 @@ class _MaryTextChatState extends ConsumerState<MaryTextChat> {
                     InkWell(
                       onTap: () {
                         if (query.text.isNotEmpty) {
-                          final pv = ref.read(maryChatProvider.notifier);
-                          pv.addQuery(query.text);
-                          pv.sendQuery(query.text);
+                          // final pv = ref.read(maryChatProvider.notifier);
+                          provider.addQuery(query.text);
+                          provider.sendQuery(query.text);
                           query.text = "";
                           FocusManager.instance.primaryFocus?.unfocus();
                         }

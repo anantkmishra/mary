@@ -116,7 +116,7 @@ class MaryAssets {
 
   static const String voiceChatCardPNG = "assets/png/voice_chat_card_bg.png";
 
-  static const String maryJSON = "assets/lottie/waves2.json";
+  static const String maryJSON = "assets/lottie/mary.json";
 
   static const String typingJSON = "assets/lottie/typing.json";
 }

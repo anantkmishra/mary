@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:mary/constants/constants.dart';
+import 'package:mary/models/chat_data.dart';
 import 'package:mary/models/conversation.dart';
 import 'package:mary/models/patient.dart';
 import 'package:mary/routing/router.dart';
@@ -84,9 +85,9 @@ class MaryChatData {
 enum TtsState { playing, stopped, paused, continued }
 
 class MaryChatNotifier extends StateNotifier<MaryChatData> {
-  MaryChatNotifier(this.ref) : super(MaryChatData.fromJSON({}));
+  MaryChatNotifier() : super(MaryChatData.fromJSON({}));
 
-  final Ref ref;
+  // final Ref ref;
   late FlutterTts flutterTts;
   TtsState ttsState = TtsState.stopped;
 
@@ -405,5 +406,5 @@ class MaryChatNotifier extends StateNotifier<MaryChatData> {
 
 final StateNotifierProvider<MaryChatNotifier, MaryChatData> maryChatProvider =
     StateNotifierProvider<MaryChatNotifier, MaryChatData>(
-      (ref) => MaryChatNotifier(ref),
+      (ref) => MaryChatNotifier(),
     );

@@ -79,11 +79,15 @@ class _HomeState extends ConsumerState<Home> {
               ),
             ),
             SizedBox(height: 30.w),
-            Text("Recent Chats", style: MaryStyle().white18w700),
+            if (recentChatController.recentChats.isNotEmpty)
+              Text("Recent Chats", style: MaryStyle().white18w700),
             if (recentChatController.error != null)
-              Text(
-                recentChatController.error ?? "",
-                style: MaryStyle().grey16w500,
+              Center(
+                child: Text(
+                  recentChatController.error ?? "",
+                  style: MaryStyle().grey16w500,
+                  textAlign: TextAlign.center,
+                ),
               ),
             if (recentChatController.isLoading)
               Center(
@@ -97,19 +101,23 @@ class _HomeState extends ConsumerState<Home> {
                   itemBuilder: (context, index) {
                     return GestureDetector(
                       onTap: () {
-                        // navigateTo()
-
                         navigateTo(
-                          MaryAppRoutes.previousChat,
-                          pathParams: {
-                            "title":
-                                recentChatController.recentChats[index].title,
-                            "conversation_id":
-                                recentChatController
-                                    .recentChats[index]
-                                    .conversationId,
-                          },
+                          MaryAppRoutes.chat,
+                          extra: recentChatController.recentChats[index],
                         );
+
+                        // navigateTo(
+                        //   MaryAppRoutes.previousChat,
+
+                        //   pathParams: {
+                        //     "title":
+                        //         recentChatController.recentChats[index].title,
+                        //     "conversation_id":
+                        //         recentChatController
+                        //             .recentChats[index]
+                        //             .conversationId,
+                        //   },
+                        // );
                       },
                       child: Container(
                         padding: EdgeInsets.symmetric(
@@ -123,6 +131,8 @@ class _HomeState extends ConsumerState<Home> {
                           borderRadius: BorderRadius.circular(8.w),
                         ),
                         child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Flexible(
                               child: Text(
@@ -132,14 +142,16 @@ class _HomeState extends ConsumerState<Home> {
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
-                            SizedBox(width: 10.w),
-                            Text(
-                              xTimeAgo(
-                                recentChatController
-                                    .recentChats[index]
-                                    .createdAt,
+                            Padding(
+                              padding: EdgeInsets.only(left: 10.w),
+                              child: Text(
+                                xTimeAgo(
+                                  recentChatController
+                                      .recentChats[index]
+                                      .updatedAt,
+                                ),
+                                style: MaryStyle().white12w400,
                               ),
-                              style: MaryStyle().white12w400,
                             ),
                           ],
                         ),
@@ -166,10 +178,10 @@ class _HomeState extends ConsumerState<Home> {
 
   Widget voiceRecordingCard() {
     return Container(
-      margin: EdgeInsets.only(right: 16),
-      padding: EdgeInsets.symmetric(vertical: 15, horizontal: 12),
+      margin: EdgeInsets.only(right: 16.w),
+      padding: EdgeInsets.symmetric(vertical: 15.w, horizontal: 12.w),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(10.w),
         image: DecorationImage(
           image: AssetImage(MaryAssets.voiceChatCardPNG),
           fit: BoxFit.cover,
@@ -181,7 +193,7 @@ class _HomeState extends ConsumerState<Home> {
         children: [
           InkWell(
             child: CircleAvatar(
-              radius: 12,
+              radius: 12.w,
               backgroundColor: Color(0x3CFFFFFF),
               child: svgAssetImageWidget(MaryAssets.microphoneSVG),
             ),
@@ -197,9 +209,10 @@ class _HomeState extends ConsumerState<Home> {
             style: ElevatedButton.styleFrom(
               backgroundColor: MaryStyle().white,
               shape: StadiumBorder(),
-              minimumSize: Size.fromHeight(30),
+              minimumSize: Size.fromHeight(30.w),
+              padding: EdgeInsets.all(0),
             ),
-            child: Text("Start Recording", style: TextStyle(fontSize: 12)),
+            child: Text("Start Recording", style: TextStyle(fontSize: 12.sp)),
           ),
         ],
       ),

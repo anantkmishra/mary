@@ -5,6 +5,8 @@ import "package:flutter_inappwebview/flutter_inappwebview.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:mary/constants/constants.dart";
 import "package:mary/providers/meld_rx_provider.dart";
+import "package:mary/routing/router.dart";
+import "package:mary/routing/routes.dart";
 // import "package:mary/routing/routes.dart";
 import "package:mary/style/style.dart";
 // import "package:webview_flutter/webview_flutter.dart";
@@ -76,6 +78,11 @@ class _MeldRxLoginState extends ConsumerState<MeldRxLogin> {
                   //   isLoading.value = false;
                   // },
                 ),
+        // floatingActionButton: FloatingActionButton(
+        //   onPressed: () {
+        //     navigateTo(MaryAppRoutes.home);
+        //   },
+        // ),
       ),
     );
 

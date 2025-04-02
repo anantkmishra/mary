@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mary/main.dart';
+import 'package:mary/models/chat_data.dart';
 import 'package:mary/presentation/auth/login.dart';
 import 'package:mary/presentation/auth/meld_rx_login.dart';
 import 'package:mary/presentation/chat/previous_chat.dart';
@@ -8,6 +9,7 @@ import 'package:mary/presentation/chat/text_chat.dart';
 import 'package:mary/presentation/chat/voice_chat.dart';
 import 'package:mary/presentation/home/home.dart';
 import 'package:mary/routing/routes.dart';
+import 'dart:developer' as dev;
 
 final GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
 
@@ -56,14 +58,24 @@ final GoRouter maryAppRouter = GoRouter(
           path: MaryAppRoutes.chat.path,
           name: MaryAppRoutes.chat.name,
           builder: (BuildContext context, GoRouterState state) {
-            return MaryTextChat();
+            ChatData? cd;
+            try {
+              if (state.extra != null && state.extra is ChatData?) {
+                cd = state.extra as ChatData;
+              } else {
+                cd = null;
+              }
+            } catch (e) {
+              cd = null;
+              dev.log("$e", name: "Router Error");
+            }
+            return MaryTextChat(chatData: cd);
           },
         ),
         GoRoute(
           path: MaryAppRoutes.previousChat.path,
           name: MaryAppRoutes.previousChat.name,
           builder: (BuildContext context, GoRouterState state) {
-            
             return PreviousChat(
               conversatioID: state.pathParameters["conversation_id"] ?? "",
               title: state.pathParameters["title"] ?? "",
