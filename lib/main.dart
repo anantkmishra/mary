@@ -56,14 +56,18 @@ class _MaryState extends State<Mary> {
     // TODO: implement initState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      AppConstants().initializeSharedPreferences();
+      // AppConstants().initializeSharedPreferences();
+      ScreenUtil().setWidth(428); //Adapted to screen width
+      ScreenUtil().setHeight(926); //Adapted to screen height
+
       Future.delayed(const Duration(milliseconds: 500), () {
-        if (AppConstants().meldRxAccessToken != null &&
-            !AppConstants().isMeldRxAccessTokenExpired) {
-          navigateTo(MaryAppRoutes.home);
-        } else {
-          navigateTo(MaryAppRoutes.meldRxLogin);
-        }
+        navigateTo(MaryAppRoutes.home);
+        // if (AppConstants().meldRxAccessToken != null &&
+        //     !AppConstants().isMeldRxAccessTokenExpired) {
+        //   navigateTo(MaryAppRoutes.home);
+        // } else {
+        //   navigateTo(MaryAppRoutes.meldRxLogin);
+        // }
       });
     });
   }

@@ -1,4 +1,3 @@
-
 enum MaryAppRoutes {
   root('/', 'root'),
   login('login', 'login'),
@@ -6,10 +5,10 @@ enum MaryAppRoutes {
   forgotPwd('forgot-pwd', 'forgot-pwd'),
   resetPwd('reset-pwd', 'reset-pwd'),
   home('/home', 'home'),
-  meldRxLogin('meldrx', 'meldrx'),
+  // meldRxLogin('meldrx', 'meldrx'),
   voiceChat('voice-chat', 'voice-chat'),
-  chat('text-chat', 'text-chat'),
-  previousChat('previous-chat/:title/:conversation_id', 'previous-chat');
+  chat('text-chat', 'text-chat');
+  // previousChat('previous-chat/:title/:conversation_id', 'previous-chat');
 
   final String path;
   final String name;

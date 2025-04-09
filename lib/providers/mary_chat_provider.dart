@@ -172,7 +172,7 @@ class MaryChatNotifier extends StateNotifier<MaryChatData> {
           backgroundColor: Colors.red,
         ),
       );
-      navigateTo(MaryAppRoutes.meldRxLogin);
+      // navigateTo(MaryAppRoutes.meldRxLogin);
       return;
     }
 

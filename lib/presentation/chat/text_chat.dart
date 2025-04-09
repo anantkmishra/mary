@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mary/constants/image_assets.dart';
 import 'package:mary/models/chat_data.dart';
@@ -14,8 +15,9 @@ import 'package:mary/style/style.dart';
 import 'package:mary/utils/widgets.dart';
 
 class MaryTextChat extends ConsumerStatefulWidget {
-  const MaryTextChat({super.key, this.chatData});
+  const MaryTextChat({super.key, this.chatData, this.newChat = true});
   final ChatData? chatData;
+  final bool newChat;
 
   @override
   ConsumerState<MaryTextChat> createState() => _MaryTextChatState();
@@ -23,17 +25,28 @@ class MaryTextChat extends ConsumerStatefulWidget {
 
 class _MaryTextChatState extends ConsumerState<MaryTextChat> {
   final TextEditingController query = TextEditingController();
-  final ScrollController _scrollController = ScrollController();
+  late final ScrollController _scrollController;
+
+  final String patientStatusKey = "PATIENT STATUS";
+  final String admissionStatusKey = "ADMISSION STATUS";
+  final String documentationKey = "DOCUMENTATION";
+  final String patientStatusQuery =
+      "Provide the progress note and discharge summary of this patient";
+  final String admissionStatusQuery = "Is this patient okay for discharge?";
+  final String documentationQuery =
+      "provide a full diagnostic on patient and provide next steps with recommended actions";
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    _scrollController = ScrollController();
     dev.log(maryAppRouter.state.fullPath ?? "", name: "PATH ");
-    if (widget.chatData != null) {
-      WidgetsBinding.instance.addPostFrameCallback((t) {
-        final provider = ref.read(chatProvider);
-        // provider.destroySession();
+
+    WidgetsBinding.instance.addPostFrameCallback((t) {
+      final provider = ref.read(chatProvider);
+      // provider.destroySession();
+      if (widget.chatData != null) {
         provider.initSession(
           patientId: widget.chatData!.patientId,
           sessionId: widget.chatData!.conversationId,
@@ -42,8 +55,10 @@ class _MaryTextChatState extends ConsumerState<MaryTextChat> {
         provider.fetchConversationBySessionId(
           widget.chatData?.conversationId ?? "",
         );
-      });
-    }
+      } else if (widget.newChat) {
+        provider.destroySession();
+      }
+    });
   }
 
   @override
@@ -55,17 +70,11 @@ class _MaryTextChatState extends ConsumerState<MaryTextChat> {
 
   @override
   Widget build(BuildContext context) {
+    // return Placeholder();
     // final provider = ref.watch(maryChatProvider);
     final provider = ref.watch(chatProvider);
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-        );
-      }
+      scrollToEnd();
     });
 
     return Scaffold(
@@ -198,28 +207,23 @@ class _MaryTextChatState extends ConsumerState<MaryTextChat> {
                   hintStyle: MaryStyle().white16w500,
                   prefixIcon: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: InkWell(
-                      onTap: () {
-                        dev.log("PREFIX ICON TAPPED");
-                      },
-                      child: svgAssetImageWidget(
-                        MaryAssets.add2SVG,
-                        color: MaryStyle().cadetGray,
-                        height: 25.w,
-                        width: 25.w,
-                      ),
-                    ),
+                    child: speedDial(),
+                    // InkWell(
+                    //   onTap: () {
+                    //     dev.log("PREFIX ICON TAPPED");
+                    //   },
+                    //   child: svgAssetImageWidget(
+                    //     MaryAssets.add2SVG,
+                    //     color: MaryStyle().cadetGray,
+                    //     height: 25.w,
+                    //     width: 25.w,
+                    //   ),
+                    // ),
                   ),
 
                   suffixIcon: Padding(
                     padding: EdgeInsets.all(10.0.w),
-                    child:
-                    // provider.waitingForResponse
-                    //     ? CircularProgressIndicator(
-                    //       color: MaryStyle().cadetGray,
-                    //     )
-                    // :
-                    InkWell(
+                    child: InkWell(
                       onTap: () {
                         if (query.text.isNotEmpty) {
                           // final pv = ref.read(maryChatProvider.notifier);
@@ -244,7 +248,10 @@ class _MaryTextChatState extends ConsumerState<MaryTextChat> {
             ClipOval(
               child: InkWell(
                 onTap: () {
-                  navigateTo(MaryAppRoutes.voiceChat);
+                  navigateTo(
+                    MaryAppRoutes.voiceChat,
+                    queryParams: {"newchat": "false"},
+                  );
                 },
                 customBorder: CircleBorder(),
                 child: Container(
@@ -276,6 +283,87 @@ class _MaryTextChatState extends ConsumerState<MaryTextChat> {
         ),
       ),
     );
+  }
+
+  Widget speedDial() {
+    return SpeedDial(
+      buttonSize: Size(35.w, 35.w),
+      backgroundColor: MaryStyle().transparent,
+      // childMargin: EdgeInsets.symmetric(vertical: 10.w, horizontal: 5.w),
+      overlayOpacity: 0.3,
+      overlayColor: MaryStyle().black,
+      elevation: 0,
+      switchLabelPosition: true,
+      mini: true,
+      children: [
+        SpeedDialChild(
+          shape: CircleBorder(),
+          child: svgAssetImageWidget(
+            MaryAssets.medDocSVG,
+            height: 24.w,
+            color: MaryStyle().white,
+          ),
+          backgroundColor: MaryStyle().gunmetal,
+          foregroundColor: MaryStyle().white,
+          label: documentationKey,
+          labelBackgroundColor: MaryStyle().gunmetal,
+          labelStyle: MaryStyle().white14w400,
+          onTap: () {
+            ref.read(chatProvider).addQuery(documentationQuery);
+            ref.read(chatProvider).sendQuery(documentationQuery);
+          },
+        ),
+        SpeedDialChild(
+          shape: CircleBorder(),
+          child: svgAssetImageWidget(
+            MaryAssets.healthSVG,
+            height: 24.w,
+            color: MaryStyle().white,
+          ),
+          backgroundColor: MaryStyle().gunmetal,
+          foregroundColor: MaryStyle().white,
+          label: admissionStatusKey,
+          labelBackgroundColor: MaryStyle().gunmetal,
+          labelStyle: MaryStyle().white14w400,
+          onTap: () {
+            ref.read(chatProvider).addQuery(admissionStatusQuery);
+            ref.read(chatProvider).sendQuery(admissionStatusQuery);
+          },
+        ),
+        SpeedDialChild(
+          shape: CircleBorder(),
+          child: svgAssetImageWidget(
+            MaryAssets.stethoscopeSVG,
+            height: 24.w,
+            color: MaryStyle().white,
+          ),
+          backgroundColor: MaryStyle().gunmetal,
+          foregroundColor: MaryStyle().white,
+          label: patientStatusKey,
+          labelBackgroundColor: MaryStyle().gunmetal,
+          labelStyle: MaryStyle().white14w400,
+          onTap: () {
+            ref.read(chatProvider).addQuery(patientStatusQuery);
+            ref.read(chatProvider).sendQuery(patientStatusQuery);
+          },
+        ),
+      ],
+      child: svgAssetImageWidget(
+        MaryAssets.add2SVG,
+        color: MaryStyle().cadetGray,
+      ),
+    );
+  }
+
+  void scrollToEnd() {
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+    ;
   }
 
   void _showPopupMenu(BuildContext context) async {

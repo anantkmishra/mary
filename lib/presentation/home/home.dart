@@ -70,7 +70,7 @@ class _HomeState extends ConsumerState<Home> {
             ),
             SizedBox(height: 30),
             SizedBox(
-              height: height * 0.22,
+              height: 0.25.sh,
               child: Row(
                 children: [
                   Expanded(child: voiceRecordingCard()),
@@ -80,7 +80,10 @@ class _HomeState extends ConsumerState<Home> {
             ),
             SizedBox(height: 30.w),
             if (recentChatController.recentChats.isNotEmpty)
-              Text("Recent Chats", style: MaryStyle().white18w700),
+              Padding(
+                padding: EdgeInsets.only(bottom: 10.w),
+                child: Text("Recent Chats", style: MaryStyle().white18w700),
+              ),
             if (recentChatController.error != null)
               Center(
                 child: Text(
@@ -95,81 +98,64 @@ class _HomeState extends ConsumerState<Home> {
               ),
             if (recentChatController.recentChats.isNotEmpty)
               Expanded(
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: recentChatController.recentChats.length,
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                      onTap: () {
-                        navigateTo(
-                          MaryAppRoutes.chat,
-                          extra: recentChatController.recentChats[index],
-                        );
-
-                        // navigateTo(
-                        //   MaryAppRoutes.previousChat,
-
-                        //   pathParams: {
-                        //     "title":
-                        //         recentChatController.recentChats[index].title,
-                        //     "conversation_id":
-                        //         recentChatController
-                        //             .recentChats[index]
-                        //             .conversationId,
-                        //   },
-                        // );
-                      },
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 16.w,
-                          horizontal: 24.w,
-                        ),
-                        margin: EdgeInsets.only(bottom: 16.w),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Color(0xFF353535)),
-                          color: Color(0xFF23272E),
-                          borderRadius: BorderRadius.circular(8.w),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Flexible(
-                              child: Text(
-                                recentChatController.recentChats[index].title,
-                                style: MaryStyle().white16w500,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(left: 10.w),
-                              child: Text(
-                                xTimeAgo(
-                                  recentChatController
-                                      .recentChats[index]
-                                      .updatedAt,
-                                ),
-                                style: MaryStyle().white12w400,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
+                child: RefreshIndicator(
+                  onRefresh: () async {
+                    ref.read(recentChatProvider.notifier).fetchConversations();
                   },
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    padding: EdgeInsets.zero,
+                    itemCount: recentChatController.recentChats.length,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        onTap: () {
+                          navigateTo(
+                            MaryAppRoutes.chat,
+                            extra: recentChatController.recentChats[index],
+                          );
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            vertical: 16.w,
+                            horizontal: 24.w,
+                          ),
+                          margin: EdgeInsets.only(bottom: 16.w),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Color(0xFF353535)),
+                            color: Color(0xFF23272E),
+                            borderRadius: BorderRadius.circular(8.w),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  recentChatController.recentChats[index].title,
+                                  style: MaryStyle().white16w500,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(left: 10.w),
+                                child: Text(
+                                  xTimeAgo(
+                                    recentChatController
+                                        .recentChats[index]
+                                        .updatedAt,
+                                  ),
+                                  style: MaryStyle().white12w400,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ),
-
-            // TODO:
-            // Expanded(
-            //   child: ListView.builder(
-            //     itemCount: ,
-            //     itemBuilder: {
-
-            //     },
-            //   ),
-            // ),
           ],
         ),
       ),
@@ -205,7 +191,9 @@ class _HomeState extends ConsumerState<Home> {
           ),
 
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              navigateTo(MaryAppRoutes.voiceChat);
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: MaryStyle().white,
               shape: StadiumBorder(),
@@ -225,9 +213,10 @@ class _HomeState extends ConsumerState<Home> {
         Expanded(
           child: GestureDetector(
             onTap: () {
-              navigateTo(MaryAppRoutes.voiceChat);
+              navigateTo(MaryAppRoutes.chat);
             },
             child: Container(
+              padding: EdgeInsets.all(10.w),
               decoration: BoxDecoration(
                 color: MaryStyle().cardBG,
                 border: Border.all(width: 1, color: MaryStyle().jetBlack),
@@ -245,7 +234,7 @@ class _HomeState extends ConsumerState<Home> {
                       height: 16,
                     ),
                   ),
-                  SizedBox(width: 10),
+                  SizedBox(width: 10.w),
                   Text("Start New Chat", style: MaryStyle().white12w400),
                 ],
               ),
@@ -260,9 +249,11 @@ class _HomeState extends ConsumerState<Home> {
               // navigateTo(MaryAppRoutes.chat);
             },
             child: Container(
+              padding: EdgeInsets.all(10.w),
+
               decoration: BoxDecoration(
                 color: MaryStyle().cardBG,
-                border: Border.all(width: 1, color: MaryStyle().jetBlack),
+                border: Border.all(width: 1.w, color: MaryStyle().jetBlack),
                 borderRadius: BorderRadius.circular(8),
               ),
               alignment: Alignment.center,
@@ -270,15 +261,20 @@ class _HomeState extends ConsumerState<Home> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   CircleAvatar(
-                    radius: 12,
+                    radius: 12.w,
                     backgroundColor: Color(0x3CFFFFFF),
                     child: svgAssetImageWidget(
                       MaryAssets.stethoscopeSVG,
-                      height: 16,
+                      height: 16.w,
                     ),
                   ),
-                  SizedBox(width: 10),
-                  Text("Search Patient Data", style: MaryStyle().white12w400),
+                  SizedBox(width: 10.w),
+                  Flexible(
+                    child: Text(
+                      "Search Patient Data",
+                      style: MaryStyle().white12w400,
+                    ),
+                  ),
                 ],
               ),
             ),

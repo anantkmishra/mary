@@ -19,9 +19,9 @@ class AppConstants {
 
   final String redirectUri = "https://mary.seecole.app/callback";
 
-  final String query = "query?";
-  final String conversationList = "query/conversation-list";
-  final String conversation = "query/conversation";
+  final String query = "?";
+  final String conversationList = "conversation-list";
+  final String conversation = "conversation";
 
   String? _meldRxCodeVerifier;
   String? get meldRxCodeVerifier => _meldRxCodeVerifier;
@@ -38,7 +38,7 @@ class AppConstants {
   void setmeldRxCode(String? s) => _meldRxCode = s;
 
   final String keyMeldRxAccessToken = "meldRxAccessToken";
-  String? _meldRxAccessToken;
+  String? _meldRxAccessToken = "accesstoken123";
   String? get meldRxAccessToken => _meldRxAccessToken;
   void setMeldRxAccessToken(String? token, [bool? setSharedPreferencesAlso]) {
     _meldRxAccessToken = token;
@@ -106,29 +106,32 @@ class AppConstants {
   SharedPreferences? _sharedPreferences;
 
   initializeSharedPreferences() async {
-    _sharedPreferences = await SharedPreferences.getInstance();
+    //TODO: remove
+    return;
 
-    if (_sharedPreferences?.containsKey(keyMeldRxAccessToken) ?? false) {
-      setMeldRxAccessToken(_sharedPreferences?.getString(keyMeldRxAccessToken));
-    }
+    // _sharedPreferences = await SharedPreferences.getInstance();
 
-    if (_sharedPreferences?.containsKey(keyMeldRxIdToken) ?? false) {
-      setmeldRxIdToken(_sharedPreferences?.getString(keyMeldRxIdToken));
-    }
+    // if (_sharedPreferences?.containsKey(keyMeldRxAccessToken) ?? false) {
+    //   setMeldRxAccessToken(_sharedPreferences?.getString(keyMeldRxAccessToken));
+    // }
 
-    if (_sharedPreferences?.containsKey(keyMeldRxRefreshToken) ?? false) {
-      setmeldRxRefreshToken(
-        _sharedPreferences?.getString(keyMeldRxRefreshToken),
-      );
-    }
+    // if (_sharedPreferences?.containsKey(keyMeldRxIdToken) ?? false) {
+    //   setmeldRxIdToken(_sharedPreferences?.getString(keyMeldRxIdToken));
+    // }
 
-    if (_sharedPreferences?.containsKey(keyMeldRxAccessTokenExpiry) ?? false) {
-      setMeldRxAccessTokenExpiry(
-        DateTime.tryParse(
-          _sharedPreferences!.getString(keyMeldRxAccessTokenExpiry) ?? "",
-        ),
-      );
-    }
+    // if (_sharedPreferences?.containsKey(keyMeldRxRefreshToken) ?? false) {
+    //   setmeldRxRefreshToken(
+    //     _sharedPreferences?.getString(keyMeldRxRefreshToken),
+    //   );
+    // }
+
+    // if (_sharedPreferences?.containsKey(keyMeldRxAccessTokenExpiry) ?? false) {
+    //   setMeldRxAccessTokenExpiry(
+    //     DateTime.tryParse(
+    //       _sharedPreferences!.getString(keyMeldRxAccessTokenExpiry) ?? "",
+    //     ),
+    //   );
+    // }
   }
 
   show() {

@@ -43,6 +43,14 @@ class ChatNotifier extends ChangeNotifier {
     flutterTts.speak(textToSpeak);
   }
 
+  maryStopSpeaking() async {
+    try {
+      await flutterTts.stop();
+    } catch (e) {
+      dev.log(e.toString(), name: "maryStopSpeaking > error");
+    }
+  }
+
   startRecording() {
     isRecording = true;
     notifyListeners();
@@ -94,10 +102,15 @@ class ChatNotifier extends ChangeNotifier {
     notifyListeners();
 
     Map<String, dynamic> response = await ApiService().postRequest(
-      'query?$queryParams',
+      '?$queryParams',
     );
 
-    handleResponse(response);
+    // Map<String, dynamic> response = {
+    //   "success": false,
+    //   "error": "Unable to process patient information request.",
+    // };
+
+    handleResponse(response, speak: speak);
 
     if (speak) {
       marySpeak(maryResponse ?? "");
@@ -113,75 +126,84 @@ class ChatNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  handleResponse(
-    Map<String, dynamic> res, {
-    bool isPreviousChat = false,
-  }) async {
-    dev.log('handleResponse()', name: "function()");
-
-    if (res.containsKey("response") &&
-        res["response"] == "Token has expired, please regenerate.") {
-      ScaffoldMessenger.of(navKey.currentContext!).showSnackBar(
-        SnackBar(
-          content: Text("Token Expired", style: MaryStyle().white14w400),
-          backgroundColor: Colors.red,
-        ),
-      );
-      navigateTo(MaryAppRoutes.meldRxLogin);
-      return;
-    }
-
-    MaryChatData newData = MaryChatData.fromJSON(res);
-
-    waitingForResponse = false;
-    maryQuery = newData.query ?? maryQuery;
-    maryResponse = newData.response;
-
-    if (!isPreviousChat) {
-      patientId = newData.patientId ?? patientId;
-    }
-
-    sessionId = newData.sessionId ?? sessionId;
-
-    // if (isPreviousChat) {
-    //   previousConversation = newData.conversation;
-    // } else {
-    conversation = newData.conversation;
-    // }
-
-    // if (newData.patients.isNotEmpty) {
-    //   patients = newData.patients;
-    // }
-
-    // state = state.copyWith(
-    // waitingForResponse: false,
-    // query: newData.query ?? state.query,
-    // response: newData.response ?? state.response,
-    // patientId: newData.patientId ?? state.patientId,
-    // sessionId: newData.sessionId ?? state.sessionId,
-    // conversation: newData.conversation,
-    // patients: newData.patients.isEmpty ? state.patients : newData.patients,
-    // );
-
-    if (res.containsKey("requires_selection")) {
-      if (res.containsKey("patients")) {
-        List<Patient> patients =
-            res["patients"]
-                .map((e) => Patient.fromJSON(e))
-                .toList()
-                .cast<Patient>();
-        //newData.patients;
-        showPatientSelectionDialog(patients).then((patientID) {
-          dev.log("$patientID", name: "showPatientSelectionDialog");
-          if (patientID != null) {
-            patientId = patientID;
-            notifyListeners();
-          }
-        });
+  handleResponse(Map<String, dynamic> res, {bool speak = false}) async {
+    try {
+      if (res.containsKey("error")) {
+        conversation.data.add(
+          ConversationPiece(
+            role: ConversationRole.assistant,
+            content: res['error'],
+          ),
+        );
+        waitingForResponse = false;
+        notifyListeners();
+        if (speak) {
+          marySpeak(res["error"]);
+        }
+        return;
       }
+
+      if (res.containsKey("response") &&
+          res["response"] == "Token has expired, please regenerate.") {
+        ScaffoldMessenger.of(navKey.currentContext!).showSnackBar(
+          SnackBar(
+            content: Text("Token Expired", style: MaryStyle().white14w400),
+            backgroundColor: Colors.red,
+          ),
+        );
+        // navigateTo(MaryAppRoutes.meldRxLogin);
+        return;
+      }
+
+      MaryChatData newData = MaryChatData.fromJSON(res);
+
+      waitingForResponse = false;
+      // maryQuery = newData.query ?? maryQuery;
+      maryResponse =
+          res.containsKey("response") ? res["response"] : maryResponse;
+      // maryResponse = newData.response;
+
+      patientId = res.containsKey("patient_id") ? res["patient_id"] : patientId;
+
+      sessionId = res.containsKey("session_id") ? res["session_id"] : sessionId;
+
+      conversation =
+          res.containsKey("conversation")
+              ? Conversation.fromJSON(res["conversation"])
+              : maryResponse != null
+              ? Conversation([
+                ...conversation.data,
+                ConversationPiece(
+                  role: ConversationRole.assistant,
+                  content: maryResponse!,
+                ),
+              ])
+              : Conversation([]);
+
+      if (res.containsKey("requires_selection")) {
+        if (res.containsKey("patients")) {
+          List<Patient> patients =
+              res["patients"]
+                  .map((e) => Patient.fromJSON(e))
+                  .toList()
+                  .cast<Patient>();
+
+          showPatientSelectionDialog(patients).then((patientID) {
+            dev.log("$patientID", name: "showPatientSelectionDialog");
+            if (patientID != null) {
+              patientId = patientID;
+              notifyListeners();
+            }
+          });
+        }
+      }
+      notifyListeners();
+      //queryResponse
+    } catch (e) {
+      dev.log(e.toString(), name: "handle response error");
+      error = e.toString();
+      notifyListeners();
     }
-    notifyListeners();
-    //queryResponse
   }
 
   f() {

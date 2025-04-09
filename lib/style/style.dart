@@ -22,6 +22,7 @@ class MaryStyle {
   final Color lightSilver = Color(0xFFD9D9D9);
   final Color cardBG = Color(0x4D434343);
   final Color gunmetal = Color(0xFF272C35);
+  final Color transparent = Color(0x00000000);
 
   //textStyles
   TextStyle get grey16w500 => TextStyle(

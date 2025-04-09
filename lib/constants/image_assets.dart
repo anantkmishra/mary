@@ -113,6 +113,8 @@ class MaryAssets {
   static const String orderSVG = "assets/svg/order";
   static const String detailsSVG = "assets/svg/details.svg";
   static const String stethoscopeSVG = "assets/svg/stethoscope.svg";
+  static const String healthSVG = "assets/svg/health.svg";
+  static const String medDocSVG = "assets/svg/medical_documentation.svg";
 
   static const String voiceChatCardPNG = "assets/png/voice_chat_card_bg.png";
 

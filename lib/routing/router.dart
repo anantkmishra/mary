@@ -31,13 +31,13 @@ final GoRouter maryAppRouter = GoRouter(
             return Login();
           },
         ),
-        GoRoute(
-          path: MaryAppRoutes.meldRxLogin.path,
-          name: MaryAppRoutes.meldRxLogin.name,
-          builder: (BuildContext context, GoRouterState state) {
-            return MeldRxLogin();
-          },
-        ),
+        // GoRoute(
+        //   path: MaryAppRoutes.meldRxLogin.path,
+        //   name: MaryAppRoutes.meldRxLogin.name,
+        //   builder: (BuildContext context, GoRouterState state) {
+        //     return MeldRxLogin();
+        //   },
+        // ),
       ],
     ),
     GoRoute(
@@ -51,6 +51,13 @@ final GoRouter maryAppRouter = GoRouter(
           path: MaryAppRoutes.voiceChat.path,
           name: MaryAppRoutes.voiceChat.name,
           builder: (BuildContext context, GoRouterState state) {
+            if (state.uri.queryParameters.isNotEmpty) {
+              if (state.uri.queryParameters.containsKey('newchat')) {
+                return MaryVoiceChat(
+                  newChat: state.uri.queryParameters["newchat"] == "true",
+                );
+              }
+            }
             return MaryVoiceChat();
           },
         ),
@@ -69,25 +76,31 @@ final GoRouter maryAppRouter = GoRouter(
               cd = null;
               dev.log("$e", name: "Router Error");
             }
-            return MaryTextChat(chatData: cd);
-          },
-        ),
-        GoRoute(
-          path: MaryAppRoutes.previousChat.path,
-          name: MaryAppRoutes.previousChat.name,
-          builder: (BuildContext context, GoRouterState state) {
-            return PreviousChat(
-              conversatioID: state.pathParameters["conversation_id"] ?? "",
-              title: state.pathParameters["title"] ?? "",
+            return MaryTextChat(
+              chatData: cd,
+              newChat:
+                  state.uri.queryParameters.containsKey("newchat")
+                      ? state.uri.queryParameters["newchat"] == "true"
+                      : true,
             );
           },
         ),
+        // GoRoute(
+        //   path: MaryAppRoutes.previousChat.path,
+        //   name: MaryAppRoutes.previousChat.name,
+        //   builder: (BuildContext context, GoRouterState state) {
+        //     return PreviousChat(
+        //       conversatioID: state.pathParameters["conversation_id"] ?? "",
+        //       title: state.pathParameters["title"] ?? "",
+        //     );
+        //   },
+        // ),
       ],
     ),
   ],
 );
 
-navigateTo(
+void navigateTo(
   MaryAppRoutes route, {
   Map<String, String>? queryParams,
   Map<String, String>? pathParams,
@@ -101,6 +114,6 @@ navigateTo(
   );
 }
 
-navigateBack() {
+void navigateBack() {
   maryAppRouter.pop();
 }

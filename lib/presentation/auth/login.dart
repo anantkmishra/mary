@@ -17,7 +17,7 @@ class Login extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: () {
-                navigateTo(MaryAppRoutes.meldRxLogin);
+                // navigateTo(MaryAppRoutes.meldRxLogin);
               },
               child: Text("MeldRx Login"),
             ),
