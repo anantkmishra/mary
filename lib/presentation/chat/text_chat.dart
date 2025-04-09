@@ -55,9 +55,12 @@ class _MaryTextChatState extends ConsumerState<MaryTextChat> {
         provider.fetchConversationBySessionId(
           widget.chatData?.conversationId ?? "",
         );
-      } else if (widget.newChat) {
+      } else {
         provider.destroySession();
       }
+      // else if (widget.newChat) {
+      //   provider.destroySession();
+      // }
     });
   }
 
