@@ -1,4 +1,4 @@
-package app.seecole.mary
+package com.seecole.mary
 
 import io.flutter.embedding.android.FlutterActivity
 

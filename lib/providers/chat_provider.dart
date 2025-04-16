@@ -337,6 +337,7 @@ class ChatNotifier extends ChangeNotifier {
     try {
       var conversationResponse = await ApiService().getRequest(
         "${AppConstants().conversation}/$id",
+        checkConnectivity: true,
       );
 
       Conversation c = Conversation(

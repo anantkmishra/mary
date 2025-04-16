@@ -3,8 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:mary/main.dart';
 import 'package:mary/models/chat_data.dart';
 import 'package:mary/presentation/auth/login.dart';
-import 'package:mary/presentation/auth/meld_rx_login.dart';
-import 'package:mary/presentation/chat/previous_chat.dart';
 import 'package:mary/presentation/chat/text_chat.dart';
 import 'package:mary/presentation/chat/voice_chat.dart';
 import 'package:mary/presentation/home/home.dart';

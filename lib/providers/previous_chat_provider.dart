@@ -52,6 +52,7 @@ class PreviousChatNotifier extends StateNotifier<PreviousChatData> {
     try {
       List<dynamic> conversation = await ApiService().getRequest(
         "${AppConstants().conversation}/$id",
+        checkConnectivity: true,
       );
       Conversation c = Conversation(
         conversation.map((e) => ConversationPiece.fromJSON(e)).toList(),

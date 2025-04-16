@@ -3,7 +3,6 @@ import "package:flutter_screenutil/flutter_screenutil.dart";
 import "package:flutter_svg/svg.dart";
 import "package:mary/models/conversation.dart";
 import "package:mary/routing/router.dart";
-import "package:mary/routing/routes.dart";
 import "package:mary/style/style.dart";
 
 Widget svgAssetImageWidget(
@@ -61,19 +60,10 @@ chatBubble(ConversationPiece statement) {
       constraints: BoxConstraints(
         maxWidth: MediaQuery.of(navKey.currentContext!).size.width * 0.8,
       ),
-      // width: MediaQuery.of(context).size.width * 0.8,
       padding: EdgeInsets.all(12.w),
       decoration: BoxDecoration(
         border: Border.all(color: MaryStyle().cadetGray, width: 1),
         borderRadius: BorderRadius.all(br),
-        // borderRadius: BorderRadius.only(
-        //   topLeft: br,
-        //   topRight: br,
-        //   bottomLeft:
-        //       statement.role == ConversationRole.assistant ? Radius.zero : br,
-        //   bottomRight:
-        //       statement.role == ConversationRole.user ? Radius.zero : br,
-        // ),
       ),
       child: Text(
         statement.content,

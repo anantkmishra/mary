@@ -38,7 +38,7 @@ class AppConstants {
   void setmeldRxCode(String? s) => _meldRxCode = s;
 
   final String keyMeldRxAccessToken = "meldRxAccessToken";
-  String? _meldRxAccessToken = "accesstoken123";
+  String? _meldRxAccessToken = "dWJ1bnR1OmFkbWlu";
   String? get meldRxAccessToken => _meldRxAccessToken;
   void setMeldRxAccessToken(String? token, [bool? setSharedPreferencesAlso]) {
     _meldRxAccessToken = token;

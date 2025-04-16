@@ -29,16 +29,27 @@ class ApiService {
     _meldRxToken = token;
   }
 
-  Future getRequest(String url, {bool isMeldRxRequest = false, bool checkConnectivity = false}) async {
+  Future getRequest(
+    String url, {
+    bool isMeldRxRequest = false,
+    bool checkConnectivity = false,
+  }) async {
     try {
-
-      if (!(await _checkFullConnectivity())) {
-        urOfflineSnackBar();
-        throw Exception("Could not fetch data !!!");
+      if (checkConnectivity) {
+        if (!(await _checkFullConnectivity())) {
+          urOfflineSnackBar();
+          throw Exception("Could not fetch data !!!");
+        }
       }
 
       url = isMeldRxRequest ? "$meldRxBaseURL/$url" : "$baseURL/$url";
-      final Response response = await get(Uri.parse(url));
+      final Response response = await get(
+        Uri.parse(url),
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Accept": "application/json",
+        },
+      );
       dev.log(
         "$url ${response.statusCode} ${response.body.length}\nResponse Body : ${response.body}",
         name: "getRequest",
@@ -57,16 +68,21 @@ class ApiService {
     bool checkConnectivity = false,
   }) async {
     try {
-      if (!(await _checkFullConnectivity())) {
-        urOfflineSnackBar();
-        throw Exception("Could not fetch data !!!");
+      if (checkConnectivity) {
+        if (!(await _checkFullConnectivity())) {
+          urOfflineSnackBar();
+          throw Exception("Could not fetch data !!!");
+        }
       }
       url = isMeldRxRequest ? "$meldRxBaseURL/$url" : "$baseURL$url";
 
       final Response response = await post(
         Uri.parse(url),
         body: body,
-        headers: {"Content-Type": "application/x-www-form-urlencoded"},
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Accept": "application/json",
+        },
       );
       dev.log(
         "$url ${response.statusCode} ${response.body.length}\nRequest Body : $body \nResponse Body : ${response.body}",

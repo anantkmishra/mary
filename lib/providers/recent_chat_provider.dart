@@ -46,6 +46,7 @@ class RecentChatNotifier extends StateNotifier<RecentChatData> {
     try {
       List<dynamic> response = await ApiService().getRequest(
         AppConstants().conversationList,
+        checkConnectivity: true,
       );
       List<ChatData> recentChatData =
           response.map((e) => ChatData.fromJSON(e)).toList();

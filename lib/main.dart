@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:mary/constants/constants.dart';
 import 'package:mary/routing/router.dart';
 import 'package:mary/routing/routes.dart';
 import 'package:mary/style/style.dart';
@@ -15,7 +14,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ScreenUtil.init(context);
+    ScreenUtil.init(context);
     return ScreenUtilInit(
       designSize: const Size(428, 926),
       minTextAdapt: true,
@@ -23,23 +22,12 @@ class MyApp extends StatelessWidget {
         return MaterialApp.router(
           title: 'MARY',
           theme: ThemeData(
-            // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
             fontFamily: "PlusJakartaSans",
           ),
           routerConfig: maryAppRouter,
-          // home: const MyHomePage(),
         );
       },
     );
-    // return MaterialApp.router(
-    //   title: 'MARY',
-    //   theme: ThemeData(
-    //     // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-    //     fontFamily: "PlusJakartaSans",
-    //   ),
-    //   routerConfig: maryAppRouter,
-    //   // home: const MyHomePage(),
-    // );
   }
 }
 
@@ -53,7 +41,6 @@ class Mary extends StatefulWidget {
 class _MaryState extends State<Mary> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // AppConstants().initializeSharedPreferences();
