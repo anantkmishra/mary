@@ -121,15 +121,16 @@ class _MaryTextChatState extends ConsumerState<MaryTextChat> {
                   ),
                 ),
                 SizedBox(width: 10.w),
-                roundIconButton(
-                  onTap: () {
-                    // _showPopupMenu(context);
-                    // ref.read(maryChatProvider.notifier).destroySession();
-                    // provider.destroySession();
-                    provider.f();
-                  },
-                  icon: MaryAssets.menu4SVG,
-                ),
+                SizedBox(width: 48.w),
+                // roundIconButton(
+                //   onTap: () {
+                //     // _showPopupMenu(context);
+                //     // ref.read(maryChatProvider.notifier).destroySession();
+                //     // provider.destroySession();
+                //     provider.f();
+                //   },
+                //   icon: MaryAssets.menu4SVG,
+                // ),
               ],
             ),
             if (provider.error != null)

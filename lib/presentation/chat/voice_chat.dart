@@ -30,7 +30,7 @@ class _MaryVoiceChatState extends ConsumerState<MaryVoiceChat> {
       provider.initSpeechToText();
       provider.initTts();
       // if (widget.newChat) {
-        provider.destroySession();
+      provider.destroySession();
       // }
     });
   }
@@ -133,16 +133,16 @@ class _MaryVoiceChatState extends ConsumerState<MaryVoiceChat> {
                               ),
                             ],
                           ),
-
-                          roundIconButton(
-                            onTap: () {
-                              provider.destroySession();
-                              // ref
-                              // .read(maryChatProvider.notifier)
-                              // .destroySession();
-                            },
-                            icon: MaryAssets.menu4SVG,
-                          ),
+                          SizedBox(width: 48.w),
+                          // roundIconButton(
+                          //   onTap: () {
+                          //     provider.destroySession();
+                          //     // ref
+                          //     // .read(maryChatProvider.notifier)
+                          //     // .destroySession();
+                          //   },
+                          //   icon: MaryAssets.menu4SVG,
+                          // ),
                         ],
                       ),
                       Expanded(
@@ -247,6 +247,7 @@ class _MaryVoiceChatState extends ConsumerState<MaryVoiceChat> {
               roundIconButton(
                 onTap: () {
                   provider.f();
+                  navigateBack();
                 },
                 icon: MaryAssets.exitSVG,
               ),

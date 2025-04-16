@@ -50,20 +50,26 @@ class _HomeState extends ConsumerState<Home> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            SizedBox(height: 40.w),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                roundIconButton(onTap: () {}, icon: MaryAssets.menu3SVG),
                 roundIconButton(
                   onTap: () {
-                    // AppConstants().show();
+                    navigateTo(MaryAppRoutes.voiceChat);
                   },
-                  icon: MaryAssets.settingSVG,
+                  icon: MaryAssets.menu3SVG,
                 ),
+                // roundIconButton(
+                //   onTap: () {
+                //     // AppConstants().show();
+                //   },
+                //   icon: MaryAssets.settingSVG,
+                // ),
               ],
             ),
-            SizedBox(height: 30),
-            Text("Hi John", style: MaryStyle().grey16w500),
+            SizedBox(height: 10.w),
+            // Text("Hi John", style: MaryStyle().grey16w500),
             Text(
               "Let’s see what can I do for you?",
               style: MaryStyle().white20w500,
