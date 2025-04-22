@@ -143,6 +143,20 @@ class ChatNotifier extends ChangeNotifier {
         return;
       }
 
+      if (res.containsKey("detail")) {
+        ScaffoldMessenger.of(navKey.currentContext!).showSnackBar(
+          SnackBar(
+            content: Text(
+              "Something went wrong... please try again later.",
+              style: MaryStyle().white14w400,
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+        // navigateTo(MaryAppRoutes.meldRxLogin);
+        return;
+      }
+
       if (res.containsKey("response") &&
           res["response"] == "Token has expired, please regenerate.") {
         ScaffoldMessenger.of(navKey.currentContext!).showSnackBar(
@@ -391,6 +405,12 @@ class ChatNotifier extends ChangeNotifier {
     if (callNotifyListeners) {
       notifyListeners();
     }
+  }
+
+  clearQR() {
+    maryQuery = null;
+    maryResponse = null;
+    notifyListeners();
   }
 }
 

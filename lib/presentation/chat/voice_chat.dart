@@ -29,9 +29,10 @@ class _MaryVoiceChatState extends ConsumerState<MaryVoiceChat> {
       final provider = ref.read(chatProvider);
       provider.initSpeechToText();
       provider.initTts();
-      // if (widget.newChat) {
-      provider.destroySession();
-      // }
+      provider.clearQR();
+      if (widget.newChat) {
+        provider.destroySession();
+      }
     });
   }
 

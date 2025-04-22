@@ -30,11 +30,11 @@ class ChatData {
       title: json.containsKey("title") ? json["title"] : "",
       createdAt:
           json.containsKey("created_at")
-              ? DateTime.parse(json["created_at"])
+              ? DateTime.parse(json["created_at"]).toLocal()
               : DateTime.now(),
       updatedAt:
           json.containsKey("last_updated")
-              ? DateTime.parse(json["last_updated"])
+              ? DateTime.parse(json["last_updated"]).toLocal()
               : DateTime.now(),
       lastMessage:
           json.containsKey("latest_message") ? json["latest_message"] : "",

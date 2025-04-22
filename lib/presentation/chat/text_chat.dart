@@ -55,12 +55,13 @@ class _MaryTextChatState extends ConsumerState<MaryTextChat> {
         provider.fetchConversationBySessionId(
           widget.chatData?.conversationId ?? "",
         );
-      } else {
-        provider.destroySession();
       }
-      // else if (widget.newChat) {
+      // else {
       //   provider.destroySession();
       // }
+      else if (widget.newChat) {
+        provider.destroySession();
+      }
     });
   }
 
@@ -294,7 +295,7 @@ class _MaryTextChatState extends ConsumerState<MaryTextChat> {
       buttonSize: Size(35.w, 35.w),
       backgroundColor: MaryStyle().transparent,
       // childMargin: EdgeInsets.symmetric(vertical: 10.w, horizontal: 5.w),
-      overlayOpacity: 0.3,
+      overlayOpacity: 0.5,
       overlayColor: MaryStyle().black,
       elevation: 0,
       switchLabelPosition: true,
