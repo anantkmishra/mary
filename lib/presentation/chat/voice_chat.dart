@@ -22,7 +22,6 @@ class MaryVoiceChat extends ConsumerStatefulWidget {
 class _MaryVoiceChatState extends ConsumerState<MaryVoiceChat> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     dev.log(maryAppRouter.state.fullPath ?? "", name: "PATH ");
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -37,16 +36,9 @@ class _MaryVoiceChatState extends ConsumerState<MaryVoiceChat> {
   }
 
   @override
-  dispose() {
-    // ref.read(chatProvider).maryStopSpeaking();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
-    // final provider = ref.watch(maryChatProvider);
     final provider = ref.watch(chatProvider);
     return PopScope(
       onPopInvokedWithResult: (k, t) {
@@ -135,24 +127,13 @@ class _MaryVoiceChatState extends ConsumerState<MaryVoiceChat> {
                             ],
                           ),
                           SizedBox(width: 48.w),
-                          // roundIconButton(
-                          //   onTap: () {
-                          //     provider.destroySession();
-                          //     // ref
-                          //     // .read(maryChatProvider.notifier)
-                          //     // .destroySession();
-                          //   },
-                          //   icon: MaryAssets.menu4SVG,
-                          // ),
                         ],
                       ),
                       Expanded(
                         child: ListView(
                           padding: EdgeInsets.only(top: 150.w, bottom: 150.w),
                           shrinkWrap: true,
-                          // mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            // SizedBox(height: 100),
                             Text(
                               provider.maryQuery ?? "",
                               style: MaryStyle().white20w500,
@@ -247,7 +228,6 @@ class _MaryVoiceChatState extends ConsumerState<MaryVoiceChat> {
 
               roundIconButton(
                 onTap: () {
-                  provider.f();
                   navigateBack();
                 },
                 icon: MaryAssets.exitSVG,

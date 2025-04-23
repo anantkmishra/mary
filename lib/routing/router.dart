@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mary/main.dart';
 import 'package:mary/models/chat_data.dart';
-import 'package:mary/presentation/auth/login.dart';
+
 import 'package:mary/presentation/chat/text_chat.dart';
 import 'package:mary/presentation/chat/voice_chat.dart';
 import 'package:mary/presentation/home/home.dart';
@@ -21,22 +21,6 @@ final GoRouter maryAppRouter = GoRouter(
       builder: (BuildContext context, GoRouterState state) {
         return Mary();
       },
-      routes: [
-        GoRoute(
-          path: MaryAppRoutes.login.path,
-          name: MaryAppRoutes.login.name,
-          builder: (BuildContext context, GoRouterState state) {
-            return Login();
-          },
-        ),
-        // GoRoute(
-        //   path: MaryAppRoutes.meldRxLogin.path,
-        //   name: MaryAppRoutes.meldRxLogin.name,
-        //   builder: (BuildContext context, GoRouterState state) {
-        //     return MeldRxLogin();
-        //   },
-        // ),
-      ],
     ),
     GoRoute(
       path: MaryAppRoutes.home.path,
@@ -83,16 +67,6 @@ final GoRouter maryAppRouter = GoRouter(
             );
           },
         ),
-        // GoRoute(
-        //   path: MaryAppRoutes.previousChat.path,
-        //   name: MaryAppRoutes.previousChat.name,
-        //   builder: (BuildContext context, GoRouterState state) {
-        //     return PreviousChat(
-        //       conversatioID: state.pathParameters["conversation_id"] ?? "",
-        //       title: state.pathParameters["title"] ?? "",
-        //     );
-        //   },
-        // ),
       ],
     ),
   ],

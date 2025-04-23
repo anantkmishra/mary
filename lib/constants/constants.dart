@@ -104,41 +104,4 @@ class AppConstants {
   bool get isSharedPreferencesInitialized => _sharedPreferences != null;
 
   SharedPreferences? _sharedPreferences;
-
-  initializeSharedPreferences() async {
-    //TODO: remove
-    return;
-
-    // _sharedPreferences = await SharedPreferences.getInstance();
-
-    // if (_sharedPreferences?.containsKey(keyMeldRxAccessToken) ?? false) {
-    //   setMeldRxAccessToken(_sharedPreferences?.getString(keyMeldRxAccessToken));
-    // }
-
-    // if (_sharedPreferences?.containsKey(keyMeldRxIdToken) ?? false) {
-    //   setmeldRxIdToken(_sharedPreferences?.getString(keyMeldRxIdToken));
-    // }
-
-    // if (_sharedPreferences?.containsKey(keyMeldRxRefreshToken) ?? false) {
-    //   setmeldRxRefreshToken(
-    //     _sharedPreferences?.getString(keyMeldRxRefreshToken),
-    //   );
-    // }
-
-    // if (_sharedPreferences?.containsKey(keyMeldRxAccessTokenExpiry) ?? false) {
-    //   setMeldRxAccessTokenExpiry(
-    //     DateTime.tryParse(
-    //       _sharedPreferences!.getString(keyMeldRxAccessTokenExpiry) ?? "",
-    //     ),
-    //   );
-    // }
-  }
-
-  show() {
-    print("abcd");
-    print(_sharedPreferences?.getString(keyMeldRxAccessToken));
-    print(_sharedPreferences?.getString(keyMeldRxRefreshToken));
-    print(_sharedPreferences?.getString(keyMeldRxIdToken));
-    print(_sharedPreferences?.getString(keyMeldRxAccessTokenExpiry));
-  }
 }

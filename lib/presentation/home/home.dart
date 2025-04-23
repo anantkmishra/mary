@@ -2,7 +2,6 @@ import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:flutter_screenutil/flutter_screenutil.dart";
 import "package:mary/constants/image_assets.dart";
-import "package:mary/models/chat_data.dart";
 import "package:mary/providers/recent_chat_provider.dart";
 import "package:mary/routing/router.dart";
 import "package:mary/routing/routes.dart";
@@ -21,7 +20,6 @@ class Home extends ConsumerStatefulWidget {
 class _HomeState extends ConsumerState<Home> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((t) {
       ref.read(recentChatProvider.notifier).fetchConversations();
@@ -31,7 +29,6 @@ class _HomeState extends ConsumerState<Home> {
 
   @override
   Widget build(BuildContext context) {
-    final double height = MediaQuery.of(context).size.height;
     final recentChatController = ref.watch(recentChatProvider);
     return Scaffold(
       backgroundColor: MaryStyle().darkBg,
@@ -60,16 +57,9 @@ class _HomeState extends ConsumerState<Home> {
                   },
                   icon: MaryAssets.menu3SVG,
                 ),
-                // roundIconButton(
-                //   onTap: () {
-                //     // AppConstants().show();
-                //   },
-                //   icon: MaryAssets.settingSVG,
-                // ),
               ],
             ),
             SizedBox(height: 10.w),
-            // Text("Hi John", style: MaryStyle().grey16w500),
             Text(
               "Let’s see what can I do for you?",
               style: MaryStyle().white20w500,
@@ -252,7 +242,6 @@ class _HomeState extends ConsumerState<Home> {
           child: GestureDetector(
             onTap: () {
               navigateTo(MaryAppRoutes.voiceChat);
-              // navigateTo(MaryAppRoutes.chat);
             },
             child: Container(
               padding: EdgeInsets.all(10.w),

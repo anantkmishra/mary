@@ -6,7 +6,6 @@ import 'package:lottie/lottie.dart';
 import 'package:mary/constants/image_assets.dart';
 import 'package:mary/models/chat_data.dart';
 import 'package:mary/providers/chat_provider.dart';
-import 'package:mary/providers/mary_chat_provider.dart';
 import 'package:mary/routing/router.dart';
 import 'dart:developer' as dev;
 
@@ -38,7 +37,6 @@ class _MaryTextChatState extends ConsumerState<MaryTextChat> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _scrollController = ScrollController();
     dev.log(maryAppRouter.state.fullPath ?? "", name: "PATH ");
@@ -74,8 +72,6 @@ class _MaryTextChatState extends ConsumerState<MaryTextChat> {
 
   @override
   Widget build(BuildContext context) {
-    // return Placeholder();
-    // final provider = ref.watch(maryChatProvider);
     final provider = ref.watch(chatProvider);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       scrollToEnd();
@@ -123,15 +119,6 @@ class _MaryTextChatState extends ConsumerState<MaryTextChat> {
                 ),
                 SizedBox(width: 10.w),
                 SizedBox(width: 48.w),
-                // roundIconButton(
-                //   onTap: () {
-                //     // _showPopupMenu(context);
-                //     // ref.read(maryChatProvider.notifier).destroySession();
-                //     // provider.destroySession();
-                //     provider.f();
-                //   },
-                //   icon: MaryAssets.menu4SVG,
-                // ),
               ],
             ),
             if (provider.error != null)
@@ -174,8 +161,6 @@ class _MaryTextChatState extends ConsumerState<MaryTextChat> {
                       );
                     }
                     return chatBubble(provider.conversation.data[index]);
-
-                    // return Text("Chat $index", style: MaryStyle().white16w500);
                   },
                 ),
               ),
@@ -194,6 +179,11 @@ class _MaryTextChatState extends ConsumerState<MaryTextChat> {
                 style: MaryStyle().white16w500,
                 cursorColor: MaryStyle().cadetGray,
                 maxLines: null,
+                onTap: () {
+                  Future.delayed(const Duration(milliseconds: 200), () {
+                    scrollToEnd();
+                  });
+                },
                 onTapOutside: (pde) {
                   FocusManager.instance.primaryFocus?.unfocus();
                 },
@@ -213,30 +203,17 @@ class _MaryTextChatState extends ConsumerState<MaryTextChat> {
                   prefixIcon: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: speedDial(),
-                    // InkWell(
-                    //   onTap: () {
-                    //     dev.log("PREFIX ICON TAPPED");
-                    //   },
-                    //   child: svgAssetImageWidget(
-                    //     MaryAssets.add2SVG,
-                    //     color: MaryStyle().cadetGray,
-                    //     height: 25.w,
-                    //     width: 25.w,
-                    //   ),
-                    // ),
                   ),
-
                   suffixIcon: Padding(
                     padding: EdgeInsets.all(10.0.w),
                     child: InkWell(
                       onTap: () {
-                        if (query.text.isNotEmpty) {
-                          // final pv = ref.read(maryChatProvider.notifier);
-                          provider.addQuery(query.text);
-                          provider.sendQuery(query.text);
-                          query.text = "";
-                          FocusManager.instance.primaryFocus?.unfocus();
+                        if (query.text.trim().isNotEmpty) {
+                          provider.addQuery(query.text.trim());
+                          provider.sendQuery(query.text.trim());
                         }
+                        FocusManager.instance.primaryFocus?.unfocus();
+                        query.text = "";
                       },
                       child: svgAssetImageWidget(
                         MaryAssets.sendSVG,
@@ -287,6 +264,7 @@ class _MaryTextChatState extends ConsumerState<MaryTextChat> {
           ],
         ),
       ),
+      resizeToAvoidBottomInset: true,
     );
   }
 
@@ -368,37 +346,7 @@ class _MaryTextChatState extends ConsumerState<MaryTextChat> {
         curve: Curves.easeInOut,
       );
     }
-    ;
   }
 
-  void _showPopupMenu(BuildContext context) async {
-    // Define the position to show the menu
-    RenderBox button = context.findRenderObject() as RenderBox;
-    var buttonPosition = button.localToGlobal(
-      Offset.zero,
-    ); // Get position of the button
-    var buttonSize = button.size;
-
-    // Show the menu
-    await showMenu<String>(
-      context: context,
-      position: RelativeRect.fromLTRB(
-        buttonPosition.dx, // X position (left of button)
-        buttonPosition.dy + buttonSize.height, // Y position (just below button)
-        buttonPosition.dx +
-            buttonSize.width, // Right position (right of button)
-        buttonPosition.dy, // Top position (just above button)
-      ),
-      items: [
-        PopupMenuItem<String>(value: 'Option 1', child: Text('Option 1')),
-        PopupMenuItem<String>(value: 'Option 2', child: Text('Option 2')),
-        PopupMenuItem<String>(value: 'Option 3', child: Text('Option 3')),
-      ],
-    ).then((value) {
-      if (value != null) {
-        // Do something with the selected value
-        print('Selected: $value');
-      }
-    });
-  }
+  
 }

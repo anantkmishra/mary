@@ -6,9 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:mary/constants/constants.dart';
 import 'package:mary/models/conversation.dart';
 import 'package:mary/models/patient.dart';
-import 'package:mary/providers/mary_chat_provider.dart';
 import 'package:mary/routing/router.dart';
-import 'package:mary/routing/routes.dart';
 import 'package:mary/services/api_service_provider.dart';
 import 'package:mary/style/style.dart';
 import 'package:speech_to_text/speech_to_text.dart';
@@ -25,12 +23,8 @@ class ChatNotifier extends ChangeNotifier {
   String? sessionId;
   String? maryResponse;
   Conversation conversation = Conversation([]);
-  // List<Patient> patients = <Patient>[];
-  // ChatData? prevChatData;
-  // Conversation? previousConversation;
 
   late FlutterTts flutterTts;
-  TtsState ttsState = TtsState.stopped;
 
   final SpeechToText _speechToText = SpeechToText();
 
@@ -82,7 +76,6 @@ class ChatNotifier extends ChangeNotifier {
     bool speak = false,
     bool isPreviousChat = false,
   }) async {
-    //api call for query
     Map<String, String> queryParamsBody = <String, String>{
       "access_token": AppConstants().meldRxAccessToken ?? "",
       "query": query,
@@ -104,11 +97,6 @@ class ChatNotifier extends ChangeNotifier {
     Map<String, dynamic> response = await ApiService().postRequest(
       '?$queryParams',
     );
-
-    // Map<String, dynamic> response = {
-    //   "success": false,
-    //   "error": "Unable to process patient information request.",
-    // };
 
     handleResponse(response, speak: speak);
 
@@ -153,7 +141,6 @@ class ChatNotifier extends ChangeNotifier {
             backgroundColor: Colors.red,
           ),
         );
-        // navigateTo(MaryAppRoutes.meldRxLogin);
         return;
       }
 
@@ -165,17 +152,11 @@ class ChatNotifier extends ChangeNotifier {
             backgroundColor: Colors.red,
           ),
         );
-        // navigateTo(MaryAppRoutes.meldRxLogin);
         return;
       }
-
-      MaryChatData newData = MaryChatData.fromJSON(res);
-
       waitingForResponse = false;
-      // maryQuery = newData.query ?? maryQuery;
       maryResponse =
           res.containsKey("response") ? res["response"] : maryResponse;
-      // maryResponse = newData.response;
 
       patientId = res.containsKey("patient_id") ? res["patient_id"] : patientId;
 
@@ -212,7 +193,6 @@ class ChatNotifier extends ChangeNotifier {
         }
       }
       notifyListeners();
-      //queryResponse
     } catch (e) {
       dev.log(e.toString(), name: "handle response error");
       error = e.toString();
@@ -220,20 +200,10 @@ class ChatNotifier extends ChangeNotifier {
     }
   }
 
-  f() {
-    dev.log(conversation.data.length.toString(), name: "conversation length");
-    // dev.log(maryQuery.toString(), name: "QUERY");
-    // dev.log(maryResponse.toString(), name: "RESPONSE");
-    dev.log(sessionId.toString(), name: "SESSION-ID");
-    dev.log(patientId.toString(), name: "PATIENT-ID");
-    // dev.log(patients.length.toString(), name: "patients");
-    // dev.log(AppConstants().meldRxAccessTokenExpiry.toString());
-  }
 
   Future<String?> showPatientSelectionDialog(List<Patient> patients) async {
     return await showModalBottomSheet(
       isDismissible: false,
-      // isScrollControlled: true,
       context: navKey.currentContext!,
       builder: (BuildContext context) {
         String patientID = '';
@@ -245,7 +215,6 @@ class ChatNotifier extends ChangeNotifier {
                 padding: EdgeInsets.all(20.w),
                 child: Column(
                   children: [
-                    // SizedBox(height: 30),
                     Text(
                       maryResponse ?? "",
                       style: MaryStyle().white16w500.copyWith(
@@ -269,7 +238,7 @@ class ChatNotifier extends ChangeNotifier {
                                   Radio<String>(
                                     value:
                                         patients[index]
-                                            .id, // Pass the index as the value
+                                            .id,
                                     groupValue: patientID,
                                     onChanged: (String? value) {
                                       setState(() {
@@ -378,7 +347,6 @@ class ChatNotifier extends ChangeNotifier {
     sessionId = null;
     patientId = null;
     error = null;
-    // patients = [];
     conversation = Conversation.fromJSON([]);
     maryResponse = null;
     maryQuery = null;

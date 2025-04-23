@@ -43,18 +43,8 @@ class _MaryState extends State<Mary> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // AppConstants().initializeSharedPreferences();
-      ScreenUtil().setWidth(428); //Adapted to screen width
-      ScreenUtil().setHeight(926); //Adapted to screen height
-
-      Future.delayed(const Duration(milliseconds: 500), () {
+      Future.delayed(const Duration(milliseconds: 200), () {
         navigateTo(MaryAppRoutes.home);
-        // if (AppConstants().meldRxAccessToken != null &&
-        //     !AppConstants().isMeldRxAccessTokenExpired) {
-        //   navigateTo(MaryAppRoutes.home);
-        // } else {
-        //   navigateTo(MaryAppRoutes.meldRxLogin);
-        // }
       });
     });
   }
@@ -64,20 +54,5 @@ class _MaryState extends State<Mary> {
     return Center(
       child: CircularProgressIndicator(color: MaryStyle().vividCrulian),
     );
-
-    // Scaffold(
-    //   appBar: AppBar(
-    //     backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-    //     title: Text("MARY"),
-    //   ),
-    //   body: Center(
-    //     child: ElevatedButton(
-    //       onPressed: () {
-    //         navigateTo(MaryAppRoutes.login);
-    //       },
-    //       child: Text('Start App'),
-    //     ),
-    //   ),
-    // );
   }
 }
