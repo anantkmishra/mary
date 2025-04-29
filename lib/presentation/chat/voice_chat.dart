@@ -195,6 +195,8 @@ class _MaryVoiceChatState extends ConsumerState<MaryVoiceChat> {
                         // ref.read(maryChatProvider.notifier).stopRecording();
                       },
                       onTapDown: (_) {
+                        provider.clearQR();
+                        provider.maryStopSpeaking();
                         provider.startRecording();
                         // ref.read(maryChatProvider.notifier).startRecording();
                       },
